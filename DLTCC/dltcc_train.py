@@ -24,7 +24,6 @@ train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
 
 MAX_EPOCH_STEPS = 10000
 
-
 # Train the models
 def train():
 
@@ -40,6 +39,7 @@ def train():
 
     # model saver
     saver = tf.train.Saver()
+    exit()
 
     with tf.Graph.as_default():
         # Train the models
