@@ -45,8 +45,10 @@ def train():
 
 
     with tf.name_scope("Build"):
+        config = tf.ConfigProto(allow_soft_placement=True)
+
         # Train the models
-        with tf.Session() as sess:
+        with tf.Session(config=config) as sess:
             x = tf.placeholder(tf.float32, [None, IMAGE_WIDTH * IMAGE_HEIGHT])
             y_true = tf.placeholder(tf.float32, [None, IMAGE_WIDTH * IMAGE_HEIGHT])
 
@@ -66,7 +68,7 @@ def train():
                 accuracy_op = 1 - tf.reduce_mean(tf.abs(dltcc_model.pred - y_true))
 
             # initialize the parameters
-            sess.run(tf.global_variables_initializer())
+            sess.run(tf.initialize_all_variables())
 
             # The accuracy of before training
             acc = sess.run(accuracy_op, feed_dict={x: data_set.test.data,
