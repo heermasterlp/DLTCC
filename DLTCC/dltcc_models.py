@@ -5,7 +5,7 @@ import tensorflow as tf
 IMAGE_WIDTH = 250
 IMAGE_HEIGHT = 250
 
-DENSE_1_OUTPUT_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 64
+DENSE_1_OUTPUT_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 16
 DENSE_2_OUTPUT_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT
 
 class Dltcc(object):
@@ -35,37 +35,37 @@ class Dltcc(object):
             self.pool1 = tf.layers.average_pooling2d(inputs=self.conv1_2, pool_size=[2, 2], strides=1, padding='same')
 
         # Conv 2
-        with tf.name_scope("Conv_2"):
-            self.conv2_1 = tf.layers.conv2d(inputs=self.pool1, filters=32, kernel_size=[3, 3], padding='same',
-                                            activation=tf.nn.relu)
-
-            self.conv2_2 = tf.layers.conv2d(inputs=self.conv2_1, filters=32, kernel_size=[3, 3], padding='same',
-                                            activation=tf.nn.relu)
-
-            self.conv2_3 = tf.layers.conv2d(inputs=self.conv2_2, filters=32, kernel_size=[3, 3], padding='same',
-                                            activation=tf.nn.relu)
-
-            self.pool2 = tf.layers.max_pooling2d(inputs=self.conv2_3, pool_size=[2, 2], strides=1, padding='same')
-
-
-
-        # Conv 3
-        with tf.name_scope("Conv_3"):
-
-            self.conv3_1 = tf.layers.conv2d(inputs=self.pool2, filters=64, kernel_size=[3, 3], padding='same',
-                                            activation=tf.nn.relu)
-
-            self.conv3_2 = tf.layers.conv2d(inputs=self.conv3_1, filters=64, kernel_size=[3, 3], padding='same',
-                                            activation=tf.nn.relu)
-
-            self.conv3_3 = tf.layers.conv2d(inputs=self.conv3_2, filters=64, kernel_size=[3, 3], padding='same',
-                                            activation=tf.nn.relu)
-
-            self.pool3 = tf.layers.max_pooling2d(inputs=self.conv3_3, pool_size=[2, 2], strides=1, padding='same')
+        # with tf.name_scope("Conv_2"):
+        #     self.conv2_1 = tf.layers.conv2d(inputs=self.pool1, filters=32, kernel_size=[3, 3], padding='same',
+        #                                     activation=tf.nn.relu)
+        #
+        #     self.conv2_2 = tf.layers.conv2d(inputs=self.conv2_1, filters=32, kernel_size=[3, 3], padding='same',
+        #                                     activation=tf.nn.relu)
+        #
+        #     self.conv2_3 = tf.layers.conv2d(inputs=self.conv2_2, filters=32, kernel_size=[3, 3], padding='same',
+        #                                     activation=tf.nn.relu)
+        #
+        #     self.pool2 = tf.layers.max_pooling2d(inputs=self.conv2_3, pool_size=[2, 2], strides=1, padding='same')
+        #
+        #
+        #
+        # # Conv 3
+        # with tf.name_scope("Conv_3"):
+        #
+        #     self.conv3_1 = tf.layers.conv2d(inputs=self.pool2, filters=64, kernel_size=[3, 3], padding='same',
+        #                                     activation=tf.nn.relu)
+        #
+        #     self.conv3_2 = tf.layers.conv2d(inputs=self.conv3_1, filters=64, kernel_size=[3, 3], padding='same',
+        #                                     activation=tf.nn.relu)
+        #
+        #     self.conv3_3 = tf.layers.conv2d(inputs=self.conv3_2, filters=64, kernel_size=[3, 3], padding='same',
+        #                                     activation=tf.nn.relu)
+        #
+        #     self.pool3 = tf.layers.max_pooling2d(inputs=self.conv3_3, pool_size=[2, 2], strides=1, padding='same')
 
         # Flat layers
         with tf.name_scope("Flat_1"):
-            self.flat1 = tf.reshape(self.pool3, [-1, IMAGE_WIDTH * IMAGE_HEIGHT * 64])
+            self.flat1 = tf.reshape(self.pool1, [-1, IMAGE_WIDTH * IMAGE_HEIGHT * 16])
 
         # Dense Layer
         with tf.name_scope("Dense"):
