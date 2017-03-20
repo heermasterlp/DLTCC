@@ -1,6 +1,4 @@
-import sys
-sys.path.append("/Users/liupeng/Documents/dl2tcc/DeepLearning2TCC/DataSet")
-import input_data
+from __future__ import absolute_import
 
 import tensorflow as tf
 

@@ -1,7 +1,10 @@
 from __future__ import absolute_import
 
-from DataSet import input_data
 import tensorflow as tf
+
+from dltcc_models import Dltcc
+
+import input_data
 
 IMAGE_WIDTH = 250
 IMAGE_HEIGHT = 250
@@ -22,7 +25,7 @@ Checkpoint_dir = "../../models/"
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-MAX_EPOCH_STEPS = 10000
+MAX_EPOCH_STEPS = 10
 
 # Train the models
 def train():
@@ -38,10 +41,10 @@ def train():
     print('test target:', len(data_set.test.target))
 
     # model saver
-    saver = tf.train.Saver()
-    exit()
+    # saver = tf.train.Saver()
 
-    with tf.Graph.as_default():
+
+    with tf.name_scope("Build"):
         # Train the models
         with tf.Session() as sess:
             x = tf.placeholder(tf.float32, [None, IMAGE_WIDTH * IMAGE_HEIGHT])
@@ -87,7 +90,7 @@ def train():
             print("After accuracy:", acc)
 
             # save the trained model
-            saver.save(sess, Checkpoint_dir + 'model.ckpt')
+            # saver.save(sess, Checkpoint_dir + 'model.ckpt')
             print("Save models finished!")
 
 
