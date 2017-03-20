@@ -55,8 +55,8 @@ def train():
 
             dltcc_model.build(x)
 
-            with tf.device('/cpu:0'):
-                # with tf.device('/gpu:0'):
+            # with tf.device('/cpu:0'):
+            with tf.device('/gpu:0'):
                 # loss operation
                 loss_op = tf.reduce_mean(tf.abs(dltcc_model.pred - y_true))
 
