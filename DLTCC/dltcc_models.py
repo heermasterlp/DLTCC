@@ -30,9 +30,9 @@ class Dltcc(object):
         with tf.name_scope("Conv_1"):
             self.conv1_1 = tf.layers.conv2d(inputs=images_reshaped, filters=16, kernel_size=[3, 3], padding='same',
                                             activation=tf.nn.relu)
-            self.conv1_2 = tf.layers.conv2d(inputs=self.conv1_1, filters=16, kernel_size=[3, 3], padding='same',
-                                            activation=tf.nn.relu)
-            self.pool1 = tf.layers.average_pooling2d(inputs=self.conv1_2, pool_size=[2, 2], strides=1, padding='same')
+            # self.conv1_2 = tf.layers.conv2d(inputs=self.conv1_1, filters=16, kernel_size=[3, 3], padding='same',
+            #                                 activation=tf.nn.relu)
+            self.pool1 = tf.layers.average_pooling2d(inputs=self.conv1_1, pool_size=[2, 2], strides=1, padding='same')
 
         # Conv 2
         # with tf.name_scope("Conv_2"):
