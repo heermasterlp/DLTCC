@@ -91,12 +91,12 @@ def train():
         sess.run(init_op)
 
         # Train the models
-        for step in range(10000):
+        for step in range(1000):
             x_batch, y_batch = data_set.train.next_batch(200)
 
             _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch})
 
-            if step % 100 == 0:
+            if step % 10 == 0:
                 print("Step {0} : {1}".format(step, cost))
 
         # Save the trained models.
