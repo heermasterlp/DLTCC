@@ -11,18 +11,18 @@ import ImageDisplay
 import dltcc_models
 
 # 250x250 data set
-# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_250_250_400_train.npy"
-# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_250_250_400_train.npy"
-#
-# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_250_250_40_test.npy"
-# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_250_250_40_test.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_250_250_400_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_250_250_400_train.npy"
+
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_250_250_40_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_250_250_40_test.npy"
 
 # 50x50 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_50_50_200_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_50_50_200_train.npy"
-
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_50_50_20_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
+# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_50_50_200_train.npy"
+# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_50_50_200_train.npy"
+#
+# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_50_50_20_test.npy"
+# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
 
 # 100x100 data set
 # train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
@@ -38,7 +38,7 @@ VALIDATION_SIZE = 50
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-SIZE = 50
+SIZE = 250
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
@@ -91,12 +91,12 @@ def train():
         sess.run(init_op)
 
         # Train the models
-        for step in range(1000):
+        for step in range(10000):
             x_batch, y_batch = data_set.train.next_batch(200)
 
             _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch})
 
-            if step % 10 == 0:
+            if step % 100 == 0:
                 print("Step {0} : {1}".format(step, cost))
 
         # Save the trained models.
