@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 from functools import reduce
 
-SIZE = 250
+SIZE = 100
 
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
