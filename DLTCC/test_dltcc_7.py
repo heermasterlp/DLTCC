@@ -42,8 +42,8 @@ SIZE = 100
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
-model_path = "../../checkpoints/models"
-checkpoint_path = "../../checkpoints/checkpoints"
+model_path = "../../checkpoints/models_dltcc_7_100_100"
+checkpoint_path = "../../checkpoints/checkpoints_dltcc_7_100_100"
 
 # threshold
 THEROSHOLD = 0.6
