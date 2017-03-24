@@ -35,12 +35,12 @@ class Dltcc(object):
             self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32, use_pooling=True)
 
             # Conv 4
-        with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True)
+        # with tf.name_scope("conv4"):
+        #     self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True)
 
             # Flatten layer
         with tf.name_scope("flatten1"):
-            self.layer_flat, self.num_flat_features = flatten_layer(self.conv4)
+            self.layer_flat, self.num_flat_features = flatten_layer(self.conv3)
 
         with tf.name_scope("fc_layer"):
             self.layer_fc1 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
