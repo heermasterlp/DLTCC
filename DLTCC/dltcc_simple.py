@@ -18,18 +18,18 @@ import dltcc_models
 # test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_250_250_40_test.npy"
 
 # 50x50 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_50_50_200_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_50_50_200_train.npy"
-
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_50_50_20_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
+# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_50_50_200_train.npy"
+# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_50_50_200_train.npy"
+#
+# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_50_50_20_test.npy"
+# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
 
 # 100x100 data set
-# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
-# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_100_100_200_train.npy"
-#
-# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_100_100_20_test.npy"
-# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_100_100_200_train.npy"
+
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_100_100_20_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
 
 # validation size
 VALIDATION_SIZE = 50
@@ -38,12 +38,14 @@ VALIDATION_SIZE = 50
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-SIZE = 50
+SIZE = 100
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
-model_path = "../../checkpoints/models_50_50"
-checkpoint_path = "../../checkpoints/checkpoints_50_50"
+# model_path = "../../checkpoints/models_50_50"
+# checkpoint_path = "../../checkpoints/checkpoints_50_50"
+model_path = "../../checkpoints/models_100_100"
+checkpoint_path = "../../checkpoints/checkpoints_100_100"
 
 # threshold
 THEROSHOLD = 0.6
@@ -69,7 +71,7 @@ def train():
     # Loss
     with tf.device("gpu:0"):
         cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob)**2)
-        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
+        optimizer_op = tf.train.GradientDescentOptimizer(0.001).minimize(cost_op)
 
     print("Build models end!")
 
