@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import tensorflow as tf
 
-SIZE = 50
+SIZE = 100
 
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE

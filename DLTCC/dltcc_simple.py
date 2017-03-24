@@ -18,18 +18,18 @@ import dltcc_models
 # test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_250_250_40_test.npy"
 
 # 50x50 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_50_50_200_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_50_50_200_train.npy"
-
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_50_50_20_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
+# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_50_50_200_train.npy"
+# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_50_50_200_train.npy"
+#
+# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_50_50_20_test.npy"
+# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
 
 # 100x100 data set
-# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
-# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_100_100_200_train.npy"
-#
-# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_100_100_20_test.npy"
-# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_100_100_200_train.npy"
+
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_100_100_20_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
 
 # validation size
 VALIDATION_SIZE = 50
@@ -38,17 +38,17 @@ VALIDATION_SIZE = 50
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-SIZE = 50
+SIZE = 100
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
 # model_path = "../../checkpoints/models_50_50"
 # checkpoint_path = "../../checkpoints/checkpoints_50_50"
-model_path = "../../checkpoints/models_50_50"
-checkpoint_path = "../../checkpoints/checkpoints_50_50"
+model_path = "../../checkpoints/models_100_100"
+checkpoint_path = "../../checkpoints/checkpoints_100_100"
 
 # threshold
-THEROSHOLD = 0.6
+THEROSHOLD = 0.7
 
 # max training epoch
 MAX_TRAIN_EPOCH = 100000
@@ -71,7 +71,7 @@ def train():
     # Loss
     with tf.device("gpu:0"):
         cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob)**2)
-        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
+        optimizer_op = tf.train.RMSPropOptimizer(0.1).minimize(cost_op)
 
     print("Build models end!")
 
@@ -116,7 +116,7 @@ def evaluate():
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = data_set.test.target
+    y_true = data_set.train.target
 
     # Build models
     dltcc_obj = dltcc_models.Dltcc()
@@ -136,11 +136,12 @@ def evaluate():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.test.data})
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data})
 
         if prediction is None:
             print("Prediction is none")
             return
+        print(prediction.shape)
         assert prediction.shape == y_true.shape
 
         # average accuracy
@@ -154,10 +155,9 @@ def evaluate():
                     y_pred.append(1)
                 else:
                     y_pred.append(0)
-            y_pred = []
 
             y_pred = np.array(y_pred)
-            y_true = np.array(data_set.test.target[x])
+            y_true = np.array(data_set.train.target[x])
 
             sub_array = np.abs(np.subtract(y_pred, y_true))
             sum = 0.0
@@ -219,9 +219,11 @@ def test_inference():
     # Data set
     data_set = input_data.read_data_sets(train_dir, validation_size=40)
 
-    input = data_set.test.data[5]
+    index = 14
+
+    input = data_set.test.data[index]
     input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
-    target = data_set.test.target[5]
+    target = data_set.test.target[index]
     # Predict
     predict = inference(input, target)
 
