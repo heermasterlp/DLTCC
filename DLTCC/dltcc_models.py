@@ -121,7 +121,8 @@ def conv_layer(input,  # The previous layer.
     #                      padding='SAME')
     layer = tf.nn.conv2d(input=input,
                          filter=weights,
-                         strides=[1, 1, 1, 1])
+                         strides=[1, 1, 1, 1],
+                         padding="VALID")
 
     # Add the biases to the results of the convolution.
     # A bias-value is added to each filter-channel.
@@ -138,7 +139,8 @@ def conv_layer(input,  # The previous layer.
         #                        padding='SAME')
         layer = tf.nn.max_pool(value=layer,
                                ksize=[1, 2, 2, 1],
-                               strides=[1, 2, 2, 1])
+                               strides=[1, 2, 2, 1],
+                               padding="VALID")
 
     # Rectified Linear Unit (ReLU).
     # It calculates max(x, 0) for each input pixel x.
