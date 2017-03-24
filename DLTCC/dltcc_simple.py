@@ -62,7 +62,7 @@ def train():
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
     y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
 
-    dltcc_obj = dltcc_models.Dltcc()
+    dltcc_obj = dltcc_models.Dltcc11()
     dltcc_obj.build(x)
 
     # Loss
