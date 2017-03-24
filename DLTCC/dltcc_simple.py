@@ -48,6 +48,9 @@ checkpoint_path = "../../checkpoints/checkpoints"
 # threshold
 THEROSHOLD = 0.6
 
+# max training epoch
+MAX_TRAIN_EPOCH = 100000
+
 # Train models
 def train():
     # Data set
@@ -91,13 +94,13 @@ def train():
         sess.run(init_op)
 
         # Train the models
-        for step in range(10000):
+        for epoch in range(MAX_TRAIN_EPOCH):
             x_batch, y_batch = data_set.train.next_batch(200)
 
             _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch})
 
-            if step % 100 == 0:
-                print("Step {0} : {1}".format(step, cost))
+            if epoch % 100 == 0:
+                print("Step {0} : {1}".format(epoch, cost))
 
         # Save the trained models.
         saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
