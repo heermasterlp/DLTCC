@@ -38,7 +38,7 @@ VALIDATION_SIZE = 50
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-SIZE = 250
+SIZE = 100
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
