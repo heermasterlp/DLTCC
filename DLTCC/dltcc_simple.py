@@ -100,7 +100,7 @@ def train():
             _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch})
 
             if epoch % 100 == 0:
-                print("Step {0} : {1}".format(epoch, cost))
+                print("Epoch {0} : {1}".format(epoch, cost))
 
         # Save the trained models.
         saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
