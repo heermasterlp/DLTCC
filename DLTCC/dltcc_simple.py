@@ -42,14 +42,15 @@ SIZE = 50
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
-model_path = "../../checkpoints/models"
-checkpoint_path = "../../checkpoints/checkpoints"
+model_path = "../../checkpoints/models_50_50"
+checkpoint_path = "../../checkpoints/checkpoints_50_50"
 
 # threshold
 THEROSHOLD = 0.6
 
 # max training epoch
-MAX_TRAIN_EPOCH = 100000
+MAX_TRAIN_EPOCH = 10000
+
 
 # Train models
 def train():
@@ -62,7 +63,7 @@ def train():
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
     y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
 
-    dltcc_obj = dltcc_models.Dltcc11()
+    dltcc_obj = dltcc_models.Dltcc()
     dltcc_obj.build(x)
 
     # Loss
@@ -78,8 +79,6 @@ def train():
 
     # save the models and checkpoints. the formatting: (models) models-date.ckpt, (checkpoint) checkpoint-date-step.ckpt
     saver = tf.train.Saver()
-    model_path = "../../checkpoints/models"
-    checkpoint_path = "../../checkpoints/checkpoints"
 
     if not os.path.exists(model_path):
         os.mkdir(model_path)

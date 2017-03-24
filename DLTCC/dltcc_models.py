@@ -8,7 +8,7 @@ IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
 
-class Dltcc11(object):
+class Dltcc(object):
     def __init__(self):
         pass
 
@@ -52,7 +52,7 @@ class Dltcc11(object):
             print("Build models end!")
 
 
-class Dltcc7(object):
+class Dltcc1(object):
     def __init__(self):
         pass
 
@@ -115,10 +115,13 @@ def conv_layer(input,  # The previous layer.
     # is moved 2 pixels across the x- and y-axis of the image.
     # The padding is set to 'SAME' which means the input image
     # is padded with zeroes so the size of the output is the same.
+    # layer = tf.nn.conv2d(input=input,
+    #                      filter=weights,
+    #                      strides=[1, 1, 1, 1],
+    #                      padding='SAME')
     layer = tf.nn.conv2d(input=input,
                          filter=weights,
-                         strides=[1, 1, 1, 1],
-                         padding='SAME')
+                         strides=[1, 1, 1, 1])
 
     # Add the biases to the results of the convolution.
     # A bias-value is added to each filter-channel.
@@ -129,10 +132,13 @@ def conv_layer(input,  # The previous layer.
         # This is 2x2 max-pooling, which means that we
         # consider 2x2 windows and select the largest value
         # in each window. Then we move 2 pixels to the next window.
+        # layer = tf.nn.max_pool(value=layer,
+        #                        ksize=[1, 2, 2, 1],
+        #                        strides=[1, 2, 2, 1],
+        #                        padding='SAME')
         layer = tf.nn.max_pool(value=layer,
                                ksize=[1, 2, 2, 1],
-                               strides=[1, 2, 2, 1],
-                               padding='SAME')
+                               strides=[1, 2, 2, 1])
 
     # Rectified Linear Unit (ReLU).
     # It calculates max(x, 0) for each input pixel x.
@@ -199,7 +205,6 @@ def new_fc_layer(input,          # The previous layer.
 
     # Use ReLU?
     if use_sigmoid:
-        # layer = tf.nn.relu(layer)
         layer = tf.nn.sigmoid(layer)
 
     return layer
