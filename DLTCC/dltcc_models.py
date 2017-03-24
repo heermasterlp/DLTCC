@@ -31,7 +31,7 @@ class Dltcc(object):
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True)
+            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=32, use_pooling=True)
 
             # Flatten layer
         with tf.name_scope("flatten1"):
@@ -39,7 +39,7 @@ class Dltcc(object):
 
         with tf.name_scope("fc_layer"):
             self.layer_fc1 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
-                                     num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT * 4, use_sigmoid=True)
+                                     num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT * 2, use_sigmoid=True)
 
             self.layer_fc2 = new_fc_layer(input=self.layer_fc1, num_inputs=IMAGE_WIDTH * IMAGE_HEIGHT * 4,
                                      num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT, use_sigmoid=True)
