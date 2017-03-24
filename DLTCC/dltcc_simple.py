@@ -71,7 +71,7 @@ def train():
 
     # initialize variable
     # init_op = tf.global_variables_initializer()
-    init_op = tf.initialize_all_variables
+    init_op = tf.initialize_all_variables()
 
     # save the models and checkpoints. the formatting: (models) models-date.ckpt, (checkpoint) checkpoint-date-step.ckpt
     saver = tf.train.Saver()
