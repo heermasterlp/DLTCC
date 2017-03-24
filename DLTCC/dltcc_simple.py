@@ -91,7 +91,9 @@ def train():
     today = "{}-{}-{}".format(now.year, now.month, now.day)
 
     # Train models
-    with tf.Session() as sess:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    with tf.Session(config=config) as sess:
         sess.run(init_op)
 
         # Train the models
