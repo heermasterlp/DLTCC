@@ -41,3 +41,8 @@ convolutional layer   filter 确保 还是 50 x 50
 
 
 
+1. 50x50 build model.  200 to train, and 20 to test
+
+2. 250x250 to train this model.
+
+

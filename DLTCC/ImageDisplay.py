@@ -3,14 +3,28 @@ from __future__ import absolute_import
 from PIL import Image
 import numpy as np
 
+SIZE = 50
+IMAGE_WIDTH = SIZE
+IMAGE_HEIGHT = SIZE
 
 # Show images
-def show_image(img_array):
+def show_bitmap(img_array):
     if img_array is None:
         print("image array should not none!")
         return
-    img_reshape = img_array.reshape((50, 50))
+    img_array = np.array(img_array)
+    img_reshape = img_array.reshape((IMAGE_WIDTH, IMAGE_HEIGHT))
     image = Image.fromarray(np.uint8(img_reshape) * 255)
+    image.show()
+
+
+def show_graymap(img_array):
+    if img_array is None:
+        print("Graymap should not none!")
+        return
+    img_array = np.array(img_array)
+    img_reshape = img_array.reshape((IMAGE_WIDTH, IMAGE_HEIGHT))
+    image = Image.fromarray(np.float32(img_reshape) * 255)
     image.show()
 
 
@@ -28,12 +42,12 @@ def test():
     npy_files = "../../DataSet/DataSetFiles/TrainSet/Qigong_250_250_400_train.npy"
     img_data = np.load(npy_files)
 
-    show_image(img_data[0])
+    show_bitmap(img_data[0])
 
     npy_files = "../../DataSet/DataSetFiles/TrainSet/Kai_250_250_400_train.npy"
     img_data = np.load(npy_files)
 
-    show_image(img_data[0])
+    show_bitmap(img_data[0])
 
 
 def test1():
@@ -42,7 +56,7 @@ def test1():
 
     npy_files = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
     img_data = np.load(npy_files)
-    show_image(img_data[10])
+    show_bitmap(img_data[10])
     print(int(img_data[10][10]))
 
 if __name__ == "__main__":

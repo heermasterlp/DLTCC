@@ -8,16 +8,16 @@ from PIL import Image
     Generate two .npy data set files.
 '''
 
-Kai_250_250_400_train = "../../DataSet/SourceImages/Kai_Images_250_250_400_train/"
-Kai_npy_250_250_400_train = "../../DataSet/DataSetFiles/TrainSet/Kai_250_250_400_train.npy"
-Qigong_250_250_400_train = "../../DataSet/SourceImages/Qigong_Images_250_250_400_train/"
-Qigong_npy_250_250_400_train = "../../DataSet/DataSetFiles/TrainSet/Qigong_250_250_400_train.npy"
+Kai_250_250_400_train = "../../DataSet/SourceImages/Kai_Images_100_100_200_train/"
+Kai_npy_250_250_400_train = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
+Qigong_250_250_400_train = "../../DataSet/SourceImages/Qigong_Images_100_100_200_train/"
+Qigong_npy_250_250_400_train = "../../DataSet/DataSetFiles/TrainSet/Qigong_100_100_200_train.npy"
 
 
-Kai_250_250_40_test = "../../DataSet/SourceImages/Kai_Images_250_250_40_test/"
-Kai_npy_250_250_40_test = "../../DataSet/DataSetFiles/TestSet/Kai_250_250_40_test.npy"
-Qigong_250_250_40_test = "../../DataSet/SourceImages/Qigong_Images_250_250_40_test/"
-Qigong_npy_250_250_40_test = "../../DataSet/DataSetFiles/TestSet/Qigong_250_250_40_test.npy"
+Kai_250_250_40_test = "../../DataSet/SourceImages/Kai_Images_100_100_20_test/"
+Kai_npy_250_250_40_test = "../../DataSet/DataSetFiles/TestSet/Kai_100_100_20_test.npy"
+Qigong_250_250_40_test = "../../DataSet/SourceImages/Qigong_Images_100_100_20_test/"
+Qigong_npy_250_250_40_test = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
 
 
 # Generate the npy file

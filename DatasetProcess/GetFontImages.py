@@ -1,13 +1,14 @@
 from PIL import Image, ImageDraw, ImageFont
+import os
 
 
 '''
     Generate the ImageDisplay SourceImages of Kai script and Qigong script and save to gray scale images.
 '''
 
-ORIANGL_HEIGHT = 350
-ORIANGL_WIDTH = 350
-CHARACTER_SIZE = 350
+ORIANGL_HEIGHT = 50
+ORIANGL_WIDTH = 50
+CHARACTER_SIZE = 50
 
 # Characters dictionary of Chinese.
 CHARACTER_DICT_FILE = "../character_dict/chinese_characters.txt"
@@ -17,8 +18,8 @@ KAI_FONTS_DICT = "../ttf_files/fangzhengkaisc.TTF"
 QIDONG_FONTS_DICT = "../ttf_files/qigongscfont.TTF"
 
 # ImageDisplay dataset files.
-KAI_IMAGE_FILES = "../../DataSet/SourceImages/Kai_Images_350_350/"
-QIDONG_IMAGE_FILES = "../../DataSet/SourceImages/SourceImages/Qigong_Images_350_350/"
+KAI_IMAGE_FILES = "../../DataSet/SourceImages/Kai_Images_50_50/"
+QIDONG_IMAGE_FILES = "../../DataSet/SourceImages/Qigong_Images_50_50/"
 
 
 class DataSetGenerate:
@@ -31,6 +32,9 @@ class DataSetGenerate:
         index = 0
         if font_files is None or image_files is None:
             print("The font files and image files should not None!")
+        if not os.path.exists(image_files):
+            os.mkdir(image_files)
+
         # Generate images based on the font dict and characters dict.
         with open(CHARACTER_DICT_FILE, mode="r") as input_files:
             contents = input_files.readlines()
@@ -95,7 +99,7 @@ if __name__ == "__main__":
     # test()
 
     # generate kai
-    generate_kai()
+    # generate_kai()
 
     # generate qi gong
     generate_qigong()

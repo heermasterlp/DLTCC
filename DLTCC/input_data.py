@@ -70,8 +70,6 @@ class DataSet(object):
             return self._data[start:end], self._target[start:end]
 
 
-
-
 # load data from npy files. train_dir is a dictionary.
 # train_dir is a dict {"train":{"data":"","target":""}, "test":{"data":"","target":""}}
 def read_data_sets(train_dir, one_hot=False, reshape=True, validation_size=50):
