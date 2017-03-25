@@ -51,7 +51,7 @@ checkpoint_path = "../../checkpoints/checkpoints_200_200"
 THEROSHOLD = 0.7
 
 # max training epoch
-MAX_TRAIN_EPOCH = 100000
+MAX_TRAIN_EPOCH = 1000
 
 
 # Train models
