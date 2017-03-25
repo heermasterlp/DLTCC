@@ -32,11 +32,11 @@ import dltcc_models
 # test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
 
 # 200x200 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_200_200_200_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_200_200_200_train.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_150_150_200_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_150_150_200_train.npy"
 
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_200_200_20_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_200_200_20_test.npy"
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_150_150_20_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_150_150_20_test.npy"
 
 # validation size
 VALIDATION_SIZE = 50
@@ -45,14 +45,14 @@ VALIDATION_SIZE = 50
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-SIZE = 200
+SIZE = 150
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
 # model_path = "../../checkpoints/models_50_50"
 # checkpoint_path = "../../checkpoints/checkpoints_50_50"
-model_path = "../../checkpoints/models_200_200"
-checkpoint_path = "../../checkpoints/checkpoints_200_200"
+model_path = "../../checkpoints/models_150_200"
+checkpoint_path = "../../checkpoints/checkpoints_150_200"
 
 # threshold
 THEROSHOLD = 0.7
