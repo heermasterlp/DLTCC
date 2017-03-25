@@ -64,7 +64,7 @@ def train():
     dltcc_obj.build(x)
 
     # Loss
-    with tf.device("cpu:0"):
+    with tf.device("gpu:0"):
         cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
         optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
