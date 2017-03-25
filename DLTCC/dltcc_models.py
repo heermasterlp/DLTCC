@@ -37,10 +37,10 @@ class Dltcc(object):
             self.layer_flat, self.num_flat_features = flatten_layer(self.conv3)
 
         with tf.name_scope("fc_layer"):
-            self.layer_fc1 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
-                                     num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT * 2, use_sigmoid=True)
+            # self.layer_fc1 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
+            #                          num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT * 2, use_sigmoid=True)
 
-            self.layer_fc2 = new_fc_layer(input=self.layer_fc1, num_inputs=IMAGE_WIDTH * IMAGE_HEIGHT * 2,
+            self.layer_fc2 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
                                      num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT, use_sigmoid=True)
 
             # Predict
