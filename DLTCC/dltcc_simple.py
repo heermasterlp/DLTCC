@@ -71,13 +71,13 @@ def train():
     # Loss
     with tf.device("gpu:0"):
         cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob)**2)
-        optimizer_op = tf.train.RMSPropOptimizer(0.1).minimize(cost_op)
+        optimizer_op = tf.train.GradientDescentOptimizer(0.001).minimize(cost_op)
 
     print("Build models end!")
 
     # initialize variable
     # init_op = tf.global_variables_initializer()
-    init_op = tf.initialize_all_variables()
+    init_op = tf.global_variables_initializer()
 
     # save the models and checkpoints. the formatting: (models) models-date.ckpt, (checkpoint) checkpoint-date-step.ckpt
     saver = tf.train.Saver()
