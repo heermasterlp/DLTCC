@@ -7,6 +7,7 @@ import tensorflow as tf
 import numpy as np
 
 import input_data
+import ImageDisplay
 
 # 200x40 data set
 train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
@@ -14,12 +15,6 @@ train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_heng_200_40_30_tr
 
 test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_heng_200_40_11_test.npy"
 test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_heng_200_40_11_test.npy"
-
-# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
-# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_100_100_200_train.npy"
-#
-# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_100_100_20_test.npy"
-# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
 
 # validation size
 VALIDATION_SIZE = 50
@@ -60,12 +55,13 @@ def train():
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
     y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
+    phase_train = tf.placeholder(tf.bool, name='phase_train');
 
     dltcc_obj = DltccHeng()
-    dltcc_obj.build(x)
+    dltcc_obj.build(x, phase_train)
 
     # Loss
-    with tf.device("gpu:0"):
+    with tf.device("cpu:0"):
         cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob)**2)
         optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
@@ -96,7 +92,7 @@ def train():
             x_batch = data_set.train.data
             y_batch = data_set.train.target
 
-            _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch})
+            _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch, phase_train: True})
 
             if epoch % 100 == 0:
                 print("Epoch {0} : {1}".format(epoch, cost))
@@ -171,8 +167,71 @@ def evaluate():
         print("Avg accuracy:{}".format(avg_accuracy))
 
 
-def inference():
-    pass
+def inference(input, target):
+    if input is None:
+        print("Input should not none!")
+
+    # place variable
+    x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
+
+    # Build models
+    dltcc_obj = DltccHeng()
+    dltcc_obj.build(x)
+
+    # Saver
+    saver = tf.train.Saver()
+
+    # output probability
+    with tf.Session() as sess:
+        # Reload the well-trained models
+        ckpt = tf.train.get_checkpoint_state(model_path)
+        if ckpt and ckpt.model_checkpoint_path:
+            saver.restore(sess, ckpt.model_checkpoint_path)
+            print("The checkpoint models found!")
+        else:
+            print("The checkpoint models not found!")
+
+        # prediction shape: [batch_size, width * height]
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: input})
+
+        print(prediction.shape)
+
+        if prediction is None:
+            return
+        img_pred = []
+        for index in range(prediction.shape[1]):
+            if prediction[0][index] >= THEROSHOLD:
+                img_pred.append(1)
+            else:
+                img_pred.append(0)
+
+        return np.array(img_pred)
+
+
+def test_inference():
+    # Data set
+    data_set = input_data.read_data_sets(train_dir, validation_size=2)
+
+    index = 9
+
+    input = data_set.train.data[index]
+    input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
+
+    target = data_set.train.target[index]
+    # Predict
+    predict = inference(input, target)
+
+    # Accuracy
+    target = np.array(target)
+
+    diff = np.abs(np.subtract(predict, target))
+    print(diff.shape)
+    sum = np.sum(diff)
+    accuracy = 1 - sum / diff.shape[0]
+    print("Accuracy:{}".format(accuracy))
+
+    ImageDisplay.show_bitmap(predict)
+    ImageDisplay.show_bitmap(target)
 
 
 class DltccHeng(object):
@@ -180,7 +239,7 @@ class DltccHeng(object):
         pass
 
     # Build the models
-    def build(self, inputs):
+    def build(self, inputs, phase_train):
         if inputs is None:
             print("Input should not none!")
 
@@ -188,17 +247,21 @@ class DltccHeng(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8, use_pooling=True)
+            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8, use_pooling=True,
+                                    phase_train=phase_train)
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16, use_pooling=True)
+            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16, use_pooling=True,
+                                    phase_train=phase_train)
             # Conv 3
         with tf.name_scope("conv3"):
-            self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32, use_pooling=True)
+            self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32, use_pooling=True,
+                                    phase_train=phase_train)
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True)
+            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True,
+                                    phase_train=phase_train)
 
             # Flatten layer
         with tf.name_scope("flatten1"):
@@ -220,7 +283,8 @@ def conv_layer(input,  # The previous layer.
                    input_channels,  # Num. channels in prev. layer.
                    filter_size,  # Width and height of each filter.
                    output_channels,  # Number of filters.
-                   use_pooling=True):  # Use 2x2 max-pooling.
+                   use_pooling=True,
+                   phase_train=True):  # Use 2x2 max-pooling.
 
     # Shape of the filter-weights for the convolution.
     # This format is determined by the TensorFlow API.
@@ -233,18 +297,6 @@ def conv_layer(input,  # The previous layer.
     biases = new_biases(length=output_channels)
 
     # Create the TensorFlow operation for convolution.
-    # Note the strides are set to 1 in all dimensions.
-    # The first and last stride must always be 1,
-    # because the first is for the image-number and
-    # the last is for the input-channel.
-    # But e.g. strides=[1, 2, 2, 1] would mean that the filter
-    # is moved 2 pixels across the x- and y-axis of the image.
-    # The padding is set to 'SAME' which means the input image
-    # is padded with zeroes so the size of the output is the same.
-    # layer = tf.nn.conv2d(input=input,
-    #                      filter=weights,
-    #                      strides=[1, 1, 1, 1],
-    #                      padding='SAME')
     layer = tf.nn.conv2d(input=input,
                          filter=weights,
                          strides=[1, 1, 1, 1],
@@ -256,30 +308,17 @@ def conv_layer(input,  # The previous layer.
 
     # Use pooling to down-sample the image resolution?
     if use_pooling:
-        # This is 2x2 max-pooling, which means that we
-        # consider 2x2 windows and select the largest value
-        # in each window. Then we move 2 pixels to the next window.
-        # layer = tf.nn.max_pool(value=layer,
-        #                        ksize=[1, 2, 2, 1],
-        #                        strides=[1, 2, 2, 1],
-        #                        padding='SAME')
         layer = tf.nn.max_pool(value=layer,
                                ksize=[1, 2, 2, 1],
                                strides=[1, 2, 2, 1],
                                padding="SAME")
 
+    # batch normalization
+    layer = batch_norm(layer, phase_train=phase_train)
+
     # Rectified Linear Unit (ReLU).
-    # It calculates max(x, 0) for each input pixel x.
-    # This adds some non-linearity to the formula and allows us
-    # to learn more complicated functions.
     layer = tf.nn.relu(layer)
 
-    # Note that ReLU is normally executed before the pooling,
-    # but since relu(max_pool(x)) == max_pool(relu(x)) we can
-    # save 75% of the relu-operations by max-pooling first.
-
-    # We return both the resulting layer and the filter-weights
-    # because we will plot the weights later.
     return layer
 
 
@@ -296,24 +335,14 @@ def flatten_layer(layer):
     # Get the shape of the input layer.
     layer_shape = layer.get_shape()
 
-    # The shape of the input layer is assumed to be:
-    # layer_shape == [num_images, img_height, img_width, num_channels]
-
     # The number of features is: img_height * img_width * num_channels
     # We can use a function from TensorFlow to calculate this.
     num_features = layer_shape[1:4].num_elements()
 
     # Reshape the layer to [num_images, num_features].
-    # Note that we just set the size of the second dimension
-    # to num_features and the size of the first dimension to -1
-    # which means the size in that dimension is calculated
-    # so the total size of the tensor is unchanged from the reshaping.
+
     layer_flat = tf.reshape(layer, [-1, num_features])
 
-    # The shape of the flattened layer is now:
-    # [num_images, img_height * img_width * num_channels]
-
-    # Return both the flattened layer and the number of features.
     return layer_flat, num_features
 
 
@@ -346,6 +375,25 @@ def new_weights(shape):
 def new_biases(length):
     return tf.Variable(tf.constant(0.05, shape=[length]))
 
+
+def batch_norm(input, phase_train, scope="batch_normal"):
+    with tf.name_scope(scope):
+        out_filters = input.get_shape()[-1]
+        beta = tf.Variable(tf.constant(0.0, shape=[out_filters]), name="beta", trainable=True)
+        gamma = tf.Variable(tf.constant(1.0, shape=[out_filters]), name="gamma", trainable=True)
+        batch_mean, batch_var = tf.nn.moments(input, [0, 1, 2], name="moments")
+        ema = tf.train.ExponentialMovingAverage(decay=0.9)
+
+        def mean_var_with_update():
+            ema_apply_op = ema.apply([batch_mean, batch_var])
+            with tf.control_dependencies([ema_apply_op]):
+                return tf.identity(batch_mean), tf.identity(batch_var)
+        mean, var = tf.cond(phase_train, mean_var_with_update, lambda: (ema.average(batch_mean), ema.average(batch_var)))
+        normaled = tf.nn.batch_normalization(input, mean, var, beta, gamma, 1e-3)
+        return normaled
+
+
 if __name__ == "__main__":
-    # train()
-    evaluate()
+    train()
+    # evaluate()
+    # test_inference()
