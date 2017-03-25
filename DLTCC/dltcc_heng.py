@@ -107,7 +107,11 @@ def train():
 
 def evaluate():
     # Data set
-    data_set = input_data.read_data_sets(train_dir, validation_size=40)
+    data_set = input_data.read_data_sets(train_dir, validation_size=2)
+
+    if data_set is None:
+        print("data set is none!")
+        return
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
