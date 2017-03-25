@@ -4,8 +4,8 @@ from PIL import Image
 import numpy as np
 
 SIZE = 50
-IMAGE_WIDTH = SIZE
-IMAGE_HEIGHT = SIZE
+IMAGE_WIDTH = 40
+IMAGE_HEIGHT = 200
 
 # Show images
 def show_bitmap(img_array):
@@ -41,11 +41,12 @@ def save_image(img_array, path):
 def test():
     npy_files = "../../DataSet/DataSetFiles/TrainSet/Qigong_250_250_400_train.npy"
     img_data = np.load(npy_files)
+    img_data = np.load(npy_files)
 
     show_bitmap(img_data[0])
 
     npy_files = "../../DataSet/DataSetFiles/TrainSet/Kai_250_250_400_train.npy"
-    img_data = np.load(npy_files)
+
 
     show_bitmap(img_data[0])
 
@@ -54,10 +55,11 @@ def test1():
     # i = Image.open("/Users/liupeng/Documents/dl2tcc/DataSet/SourceImages/Kai_Images_250_250_400_train/二.jpg")
     # i.show()
 
-    npy_files = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
+    npy_files = "../../DataSet/DataSetFiles/TrainSet/Qigong_250_250_400_train.npy"
     img_data = np.load(npy_files)
-    show_bitmap(img_data[10])
-    print(int(img_data[10][10]))
+    # show_bitmap(img_data[10])
+    # print(int(img_data[10]))
+    print(img_data.shape)
 
 if __name__ == "__main__":
     test1()

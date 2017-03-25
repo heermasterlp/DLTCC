@@ -88,7 +88,7 @@ def read_data_sets(train_dir, one_hot=False, reshape=True, validation_size=50):
 
     assert len(all_train_data) == len(all_train_target)
 
-    if validation_size <= 0 or validation_size >= len(all_train_data):
+    if validation_size < 0 or validation_size >= len(all_train_data):
         return None
 
     # train data and target

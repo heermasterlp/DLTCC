@@ -31,7 +31,7 @@ model_path = "../../checkpoints/models_200_40_"
 checkpoint_path = "../../checkpoints/checkpoints_200_40"
 
 # threshold
-THEROSHOLD = 0.7
+THEROSHOLD = 0.6
 
 # max training epoch
 MAX_TRAIN_EPOCH = 100000
@@ -55,7 +55,7 @@ def train():
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
     y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
-    phase_train = tf.placeholder(tf.bool, name='phase_train');
+    phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     dltcc_obj = DltccHeng()
     dltcc_obj.build(x, phase_train)
@@ -173,10 +173,11 @@ def inference(input, target):
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
+    phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
     dltcc_obj = DltccHeng()
-    dltcc_obj.build(x)
+    dltcc_obj.build(x, phase_train)
 
     # Saver
     saver = tf.train.Saver()
@@ -192,7 +193,7 @@ def inference(input, target):
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: input})
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: input, phase_train: False})
 
         print(prediction.shape)
 
@@ -212,12 +213,12 @@ def test_inference():
     # Data set
     data_set = input_data.read_data_sets(train_dir, validation_size=2)
 
-    index = 9
+    index = 2
 
-    input = data_set.train.data[index]
+    input = data_set.test.data[index]
     input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
 
-    target = data_set.train.target[index]
+    target = data_set.test.target[index]
     # Predict
     predict = inference(input, target)
 
@@ -394,6 +395,6 @@ def batch_norm(input, phase_train, scope="batch_normal"):
 
 
 if __name__ == "__main__":
-    train()
+    # train()
     # evaluate()
-    # test_inference()
+    test_inference()
