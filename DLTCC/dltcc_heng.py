@@ -65,7 +65,7 @@ def train():
 
     # Loss
     with tf.device("gpu:0"):
-        cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
+        cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob))
         optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
     print("Build models end!")
@@ -106,7 +106,64 @@ def train():
 
 
 def evaluate():
-    pass
+    # Data set
+    data_set = input_data.read_data_sets(train_dir, validation_size=40)
+
+    # place variable
+    x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
+    y_true = data_set.train.target
+
+    # Build models
+    dltcc_obj = DltccHeng()
+    dltcc_obj.build(x)
+
+    # Saver
+    saver = tf.train.Saver()
+
+    # output probability
+    with tf.Session() as sess:
+        # Reload the well-trained models
+        ckpt = tf.train.get_checkpoint_state(model_path)
+        if ckpt and ckpt.model_checkpoint_path:
+            saver.restore(sess, ckpt.model_checkpoint_path)
+            print("The checkpoint models found!")
+        else:
+            print("The checkpoint models not found!")
+
+        # prediction shape: [batch_size, width * height]
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data})
+
+        if prediction is None:
+            print("Prediction is none")
+            return
+        print(prediction.shape)
+        assert prediction.shape == y_true.shape
+
+        # average accuracy
+        avg_accuracy = 0.0
+        accuracy = 0.0
+        for x in range(prediction.shape[0]):
+            prediction_item = prediction[x]
+            y_pred = []
+            for y in range(prediction_item.shape[0]):
+                if prediction_item[y] > THEROSHOLD:
+                    y_pred.append(1)
+                else:
+                    y_pred.append(0)
+
+            y_pred = np.array(y_pred)
+            y_true = np.array(data_set.train.target[x])
+
+            sub_array = np.abs(np.subtract(y_pred, y_true))
+            sum = 0.0
+            for i in range(len(sub_array)):
+                sum += sub_array[i]
+            accuracy += sum / len(sub_array)
+            print("accuracy:{}".format(1 - sum / len(sub_array)))
+
+        avg_accuracy = 1 - accuracy / prediction.shape[0]
+
+        print("Avg accuracy:{}".format(avg_accuracy))
 
 
 def inference():
@@ -126,17 +183,17 @@ class DltccHeng(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=4, use_pooling=True)
+            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8, use_pooling=True)
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=4, filter_size=3, output_channels=8, use_pooling=True)
+            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16, use_pooling=True)
             # Conv 3
         with tf.name_scope("conv3"):
-            self.conv3 = conv_layer(input=self.conv2, input_channels=8, filter_size=3, output_channels=16, use_pooling=True)
+            self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32, use_pooling=True)
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=16, filter_size=3, output_channels=16, use_pooling=True)
+            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True)
 
             # Flatten layer
         with tf.name_scope("flatten1"):
