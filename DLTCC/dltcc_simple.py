@@ -32,7 +32,7 @@ import dltcc_models
 # test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
 
 # 200x200 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_150_150_200_train.npy"
 train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_150_150_200_train.npy"
 
 test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_150_150_20_test.npy"
