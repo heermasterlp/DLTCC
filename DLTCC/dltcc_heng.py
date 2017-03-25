@@ -34,7 +34,7 @@ checkpoint_path = "../../checkpoints/checkpoints_200_40"
 THEROSHOLD = 0.7
 
 # max training epoch
-MAX_TRAIN_EPOCH = 10000
+MAX_TRAIN_EPOCH = 100000
 
 
 def train():
@@ -61,7 +61,7 @@ def train():
     dltcc_obj.build(x, phase_train)
 
     # Loss
-    with tf.device("cpu:0"):
+    with tf.device("gpu:0"):
         cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob)**2)
         optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
