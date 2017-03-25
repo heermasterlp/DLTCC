@@ -342,4 +342,5 @@ def new_biases(length):
     return tf.Variable(tf.constant(0.05, shape=[length]))
 
 if __name__ == "__main__":
-    train()
+    # train()
+    evaluate()
