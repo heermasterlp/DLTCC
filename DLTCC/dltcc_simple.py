@@ -32,7 +32,7 @@ import dltcc_models
 # test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
 
 # 200x200 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_150_150_200_train.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
 train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_150_150_200_train.npy"
 
 test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_150_150_20_test.npy"
@@ -58,7 +58,7 @@ checkpoint_path = "../../checkpoints/checkpoints_150_200"
 THEROSHOLD = 0.7
 
 # max training epoch
-MAX_TRAIN_EPOCH = 100000
+MAX_TRAIN_EPOCH = 1000
 
 
 # Train models
@@ -71,9 +71,10 @@ def train():
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
     y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
+    phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     dltcc_obj = dltcc_models.Dltcc()
-    dltcc_obj.build(x)
+    dltcc_obj.build(x, phase_train)
 
     # Loss
     with tf.device("gpu:0"):
@@ -107,7 +108,8 @@ def train():
         for epoch in range(MAX_TRAIN_EPOCH):
             x_batch, y_batch = data_set.train.next_batch(200)
 
-            _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch})
+            _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
+                                                                   phase_train: True})
 
             if epoch % 100 == 0:
                 print("Epoch {0} : {1}".format(epoch, cost))
@@ -126,10 +128,11 @@ def evaluate():
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
     y_true = data_set.train.target
+    phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
     dltcc_obj = dltcc_models.Dltcc()
-    dltcc_obj.build(x)
+    dltcc_obj.build(x, phase_train)
 
     # Saver
     saver = tf.train.Saver()
@@ -145,7 +148,8 @@ def evaluate():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data})
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data,
+                                                           phase_train: False})
 
         if prediction is None:
             print("Prediction is none")
@@ -186,10 +190,11 @@ def inference(input, target):
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
+    phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
     dltcc_obj = dltcc_models.Dltcc()
-    dltcc_obj.build(x)
+    dltcc_obj.build(x, phase_train)
 
     # Saver
     saver = tf.train.Saver()
@@ -205,7 +210,8 @@ def inference(input, target):
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: input})
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: input,
+                                                           phase_train: False})
 
         print(prediction.shape)
 
