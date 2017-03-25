@@ -34,7 +34,7 @@ class Dltcc(object):
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=16, filter_size=3, output_channels=32,
+            self.conv4 = conv_layer(input=self.conv3, input_channels=16, filter_size=3, output_channels=16,
                                     use_pooling=True, phase_train=phase_train)
 
             # Flatten layer
