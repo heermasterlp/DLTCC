@@ -6,7 +6,7 @@ import datetime
 import numpy as np
 
 import input_data
-import ImageDisplay
+# import ImageDisplay
 
 import dltcc_models
 
