@@ -7,7 +7,7 @@ import numpy as np
 import time
 
 import input_data
-import ImageDisplay
+# import ImageDisplay
 
 import dltcc_models
 
@@ -81,7 +81,7 @@ def train():
         dltcc_obj.build(x, phase_train)
 
         # Loss
-        with tf.device("gpu:0"):
+        with tf.device("cpu:0"):
             cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
             optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
@@ -280,6 +280,6 @@ def normalize_func(x, minVal, maxVal, newMinVal=0, newMaxVal=1):
 
 
 if __name__ == "__main__":
-    # train()
+    train()
     # evaluate()
-    test_inference()
+    # test_inference()
