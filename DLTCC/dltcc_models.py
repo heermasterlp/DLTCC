@@ -45,7 +45,7 @@ class Dltcc(object):
 
             self.layer_fc1 = new_fc_layer(self.layer_flat, num_inputs=self.num_flat_features,
                                           num_outputs=IMAGE_WIDTH*IMAGE_HEIGHT)
-            self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=6.0)
+            self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
 
         with tf.name_scope("prob"):
             self.y_prob = tf.sigmoid(self.dropput1)
