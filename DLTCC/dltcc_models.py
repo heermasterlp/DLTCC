@@ -21,34 +21,36 @@ class Dltcc(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=4,
+            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8,
                                     use_pooling=True, phase_train=phase_train)
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=4, filter_size=3, output_channels=8,
+            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16,
                                     use_pooling=True, phase_train=phase_train)
             # Conv 3
         with tf.name_scope("conv3"):
-            self.conv3 = conv_layer(input=self.conv2, input_channels=8, filter_size=3, output_channels=16,
+            self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32,
                                     use_pooling=True, phase_train=phase_train)
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=16, filter_size=3, output_channels=16,
+            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64,
                                     use_pooling=True, phase_train=phase_train)
 
             # Flatten layer
-        with tf.name_scope("flatten1"):
+        with tf.name_scope("flatten"):
             self.layer_flat, self.num_flat_features = flatten_layer(self.conv4)
 
         with tf.name_scope("fc_layer"):
 
-            self.layer_fc2 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
-                                     num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT, use_sigmoid=True)
+            self.layer_fc1 = new_fc_layer(self.layer_flat,num_inputs=self.num_flat_features,
+                                          num_outputs=IMAGE_WIDTH*IMAGE_HEIGHT*2)
+            self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
 
-            # Predict
-        with tf.name_scope("probability"):
-            # layer_dropped = tf.nn.dropout(layer_fc2, keep_prob=1.0)
+            self.layer_fc2 = new_fc_layer(input=self.dropput1, num_inputs=self.num_flat_features,
+                                     num_outputs=IMAGE_WIDTH * IMAGE_HEIGHT)
+
+        with tf.name_scope("prob"):
             self.y_prob = tf.sigmoid(self.layer_fc2)
 
 
@@ -123,8 +125,7 @@ def flatten_layer(layer):
 # Fully connected layer
 def new_fc_layer(input,          # The previous layer.
                  num_inputs,     # Num. inputs from prev. layer.
-                 num_outputs,    # Num. outputs.
-                 use_sigmoid=True):  # Use Rectified Linear Unit (ReLU)?
+                 num_outputs):  # Num. outputs.
 
     # Create new weights and biases.
     weights = new_weights(shape=[num_inputs, num_outputs])
@@ -133,10 +134,6 @@ def new_fc_layer(input,          # The previous layer.
     # Calculate the layer as the matrix multiplication of
     # the input and weights, and then add the bias-values.
     layer = tf.matmul(input, weights) + biases
-
-    # Use ReLU?
-    if use_sigmoid:
-        layer = tf.nn.sigmoid(layer)
 
     return layer
 
