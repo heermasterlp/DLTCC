@@ -56,7 +56,7 @@ model_path = "../../checkpoints/models_150_200"
 checkpoint_path = "../../checkpoints/checkpoints_150_200"
 
 # threshold
-THEROSHOLD = 0.1
+THEROSHOLD = 0.6
 
 # max training epoch
 MAX_TRAIN_EPOCH = 5000
@@ -226,7 +226,8 @@ def inference(input, target):
         # normalize the result of prediction prob
         minPredVal = np.amin(prediction)
         maxPredVal = np.amax(prediction)
-        prediction_normed = normalize_func(prediction, minVal=minPredVal, maxVal=maxPredVal)
+        # prediction_normed = normalize_func(prediction, minVal=minPredVal, maxVal=maxPredVal)
+        prediction_normed = prediction
 
         print(prediction_normed)
 

@@ -21,20 +21,20 @@ class Dltcc(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=4,
+            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=5,
                                     use_pooling=True, phase_train=phase_train)
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=4, filter_size=3, output_channels=8,
+            self.conv2 = conv_layer(input=self.conv1, input_channels=5, filter_size=3, output_channels=10,
                                     use_pooling=True, phase_train=phase_train)
             # Conv 3
         with tf.name_scope("conv3"):
-            self.conv3 = conv_layer(input=self.conv2, input_channels=8, filter_size=3, output_channels=16,
+            self.conv3 = conv_layer(input=self.conv2, input_channels=15, filter_size=3, output_channels=10,
                                     use_pooling=True, phase_train=phase_train)
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=16, filter_size=3, output_channels=16,
+            self.conv4 = conv_layer(input=self.conv3, input_channels=20, filter_size=3, output_channels=25,
                                     use_pooling=True, phase_train=phase_train)
 
             # Flatten layer
@@ -45,7 +45,7 @@ class Dltcc(object):
 
             self.layer_fc1 = new_fc_layer(self.layer_flat, num_inputs=self.num_flat_features,
                                           num_outputs=IMAGE_WIDTH*IMAGE_HEIGHT)
-            self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
+            self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=1.0)
 
         with tf.name_scope("prob"):
             self.y_prob = tf.sigmoid(self.dropput1)
