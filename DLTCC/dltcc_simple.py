@@ -7,7 +7,7 @@ import numpy as np
 import time
 
 import input_data
-# import ImageDisplay
+import ImageDisplay
 
 import dltcc_models
 
@@ -59,7 +59,7 @@ checkpoint_path = "../../checkpoints/checkpoints_150_200"
 THEROSHOLD = 0.6
 
 # max training epoch
-MAX_TRAIN_EPOCH = 5000
+MAX_TRAIN_EPOCH = 50000
 
 
 # Train models
@@ -135,7 +135,7 @@ def evaluate():
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = data_set.train.target
+    y_true = data_set.test.target
     phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
@@ -156,13 +156,13 @@ def evaluate():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data,
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.test.data,
                                                            phase_train: False})
 
         if prediction is None:
             print("Prediction is none")
             return
-        print(prediction.shape)
+        print(prediction)
         assert prediction.shape == y_true.shape
 
         # average accuracy
