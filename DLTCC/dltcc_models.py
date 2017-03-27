@@ -44,7 +44,7 @@ class Dltcc(object):
         with tf.name_scope("fc_layer"):
 
             self.layer_fc1 = new_fc_layer(self.layer_flat, num_inputs=self.num_flat_features,
-                                          num_outputs=IMAGE_WIDTH*IMAGE_HEIGHT*2)
+                                          num_outputs=IMAGE_WIDTH*IMAGE_HEIGHT*1.2)
             self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
 
             self.layer_fc2 = new_fc_layer(input=self.dropput1, num_inputs=IMAGE_WIDTH*IMAGE_HEIGHT*2,
