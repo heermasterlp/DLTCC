@@ -102,26 +102,26 @@ def train():
         today = "{}-{}-{}".format(now.year, now.month, now.day)
 
         # Train models
-        with tf.Graph().as_default():
-            with tf.Session() as sess:
-                sess.run(init_op)
 
-                # Train the models
-                for epoch in range(MAX_TRAIN_EPOCH):
-                    x_batch, y_batch = data_set.train.next_batch(200)
+        with tf.Session() as sess:
+            sess.run(init_op)
 
-                    _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
+            # Train the models
+            for epoch in range(MAX_TRAIN_EPOCH):
+                x_batch, y_batch = data_set.train.next_batch(200)
+
+                _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
                                                                            phase_train: True})
 
-                    if epoch % 100 == 0:
-                        print("Epoch {0} : {1}".format(epoch, cost))
+                if epoch % 100 == 0:
+                    print("Epoch {0} : {1}".format(epoch, cost))
 
-                duration = time.time() - start_time
-                print("Train time:{}".format(duration))
+            duration = time.time() - start_time
+            print("Train time:{}".format(duration))
 
-                # Save the trained models.
-                saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
-                print("Training end!")
+            # Save the trained models.
+            saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
+            print("Training end!")
 
 
 # Evaluate the models
