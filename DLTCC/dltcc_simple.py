@@ -4,9 +4,10 @@ import tensorflow as tf
 import os
 import datetime
 import numpy as np
+import time
 
 import input_data
-# import ImageDisplay
+import ImageDisplay
 
 import dltcc_models
 
@@ -55,10 +56,10 @@ model_path = "../../checkpoints/models_150_200"
 checkpoint_path = "../../checkpoints/checkpoints_150_200"
 
 # threshold
-THEROSHOLD = 0.7
+THEROSHOLD = 0.1
 
 # max training epoch
-MAX_TRAIN_EPOCH = 100000
+MAX_TRAIN_EPOCH = 5000
 
 
 # Train models
@@ -68,55 +69,62 @@ def train():
 
     print("Start build models")
 
-    # place variable
-    x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
-    phase_train = tf.placeholder(tf.bool, name='phase_train')
+    with tf.Graph().as_default():
+        start_time = time.time()
 
-    dltcc_obj = dltcc_models.Dltcc()
-    dltcc_obj.build(x, phase_train)
+        # place variable
+        x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
+        y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
+        phase_train = tf.placeholder(tf.bool, name='phase_train')
 
-    # Loss
-    with tf.device("gpu:0"):
-        cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob)**2)
-        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
+        dltcc_obj = dltcc_models.Dltcc()
+        dltcc_obj.build(x, phase_train)
 
-    print("Build models end!")
+        # Loss
+        with tf.device("gpu:0"):
+            cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
+            optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
-    # initialize variable
-    # init_op = tf.global_variables_initializer()
-    init_op = tf.global_variables_initializer()
+        print("Build models end!")
 
-    # save the models and checkpoints. the formatting: (models) models-date.ckpt, (checkpoint) checkpoint-date-step.ckpt
-    saver = tf.train.Saver()
+        # initialize variable
+        # init_op = tf.global_variables_initializer()
+        init_op = tf.global_variables_initializer()
 
-    if not os.path.exists(model_path):
-        os.mkdir(model_path)
-    if not os.path.exists(checkpoint_path):
-        os.mkdir(checkpoint_path)
+        # save the models and checkpoints.
+        # the formatting: (models) models-date.ckpt, (checkpoint) checkpoint-date-step.ckpt
+        saver = tf.train.Saver()
 
-    now = datetime.datetime.now()
-    today = "{}-{}-{}".format(now.year, now.month, now.day)
+        if not os.path.exists(model_path):
+            os.mkdir(model_path)
+        if not os.path.exists(checkpoint_path):
+            os.mkdir(checkpoint_path)
 
-    # Train models
-    # config = tf.ConfigProto()
-    # config.gpu_options.allow_growth = True
-    with tf.Session() as sess:
-        sess.run(init_op)
+        now = datetime.datetime.now()
+        today = "{}-{}-{}".format(now.year, now.month, now.day)
 
-        # Train the models
-        for epoch in range(MAX_TRAIN_EPOCH):
-            x_batch, y_batch = data_set.train.next_batch(200)
+        # Train models
+        # config = tf.ConfigProto()
+        # config.gpu_options.allow_growth = True
+        with tf.Session() as sess:
+            sess.run(init_op)
 
-            _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
-                                                                   phase_train: True})
+            # Train the models
+            for epoch in range(MAX_TRAIN_EPOCH):
+                x_batch, y_batch = data_set.train.next_batch(200)
 
-            if epoch % 100 == 0:
-                print("Epoch {0} : {1}".format(epoch, cost))
+                _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
+                                                                       phase_train: True})
 
-        # Save the trained models.
-        saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
-        print("Training end!")
+                if epoch % 100 == 0:
+                    print("Epoch {0} : {1}".format(epoch, cost))
+
+            duration = time.time() - start_time
+            print("Train time:{}".format(duration))
+
+            # Save the trained models.
+            saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
+            print("Training end!")
 
 
 # Evaluate the models
@@ -215,17 +223,21 @@ def inference(input, target):
 
         print(prediction.shape)
 
-        if prediction is None:
+        # normalize the result of prediction prob
+        minPredVal = np.amin(prediction)
+        maxPredVal = np.amax(prediction)
+        prediction_normed = normalize_func(prediction, minVal=minPredVal, maxVal=maxPredVal)
+
+        print(prediction_normed)
+
+        if prediction_normed is None:
             return
         img_pred = []
-        for index in range(prediction.shape[1]):
-            if prediction[0][index] >= THEROSHOLD:
+        for index in range(prediction_normed.shape[1]):
+            if prediction_normed[0][index] >= THEROSHOLD:
                 img_pred.append(1)
             else:
                 img_pred.append(0)
-
-        ImageDisplay.show_bitmap(img_pred)
-        ImageDisplay.show_bitmap(target)
 
         return np.array(img_pred)
 
@@ -236,9 +248,9 @@ def test_inference():
 
     index = 14
 
-    input = data_set.test.data[index]
+    input = data_set.train.data[index]
     input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
-    target = data_set.test.target[index]
+    target = data_set.train.target[index]
     # Predict
     predict = inference(input, target)
 
@@ -251,12 +263,23 @@ def test_inference():
     accuracy = 1 - sum / diff.shape[0]
     print("Accuracy:{}".format(accuracy))
 
+    # statistics
+    print(np.amin(predict))
+    print(np.mean(predict))
 
 
+    ImageDisplay.show_bitmap(input)
+    ImageDisplay.show_bitmap(predict)
+    ImageDisplay.show_bitmap(target)
+
+
+def normalize_func(x, minVal, maxVal, newMinVal=0, newMaxVal=1):
+    result = (x-minVal)*newMaxVal/(maxVal-minVal) + newMinVal
+    return result
 
 
 
 if __name__ == "__main__":
-    train()
+    # train()
     # evaluate()
-    # test_inference()
+    test_inference()
