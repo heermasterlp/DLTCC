@@ -45,7 +45,7 @@ class Dltcc(object):
 
             self.layer_fc1 = new_fc_layer(self.layer_flat, num_inputs=self.num_flat_features,
                                           num_outputs=IMAGE_WIDTH*IMAGE_HEIGHT)
-            self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
+            self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.8)
 
         with tf.name_scope("prob"):
             self.y_prob = tf.sigmoid(self.dropput1)
@@ -87,20 +87,12 @@ def conv_layer(input,  # The previous layer.
                                padding="SAME")
 
     # batch normalization
-    layer = batch_norm(layer, phase_train=phase_train)
+    # layer = batch_norm(layer, phase_train=phase_train)
 
     # Rectified Linear Unit (ReLU).
     layer = tf.nn.relu(layer)
 
     return layer
-
-
-def avg_pool(inputs, name):
-    return tf.nn.avg_pool(inputs, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID', name=name)
-
-
-def max_pool(inputs, name):
-    return tf.nn.max_pool(inputs, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID', name=name)
 
 
 # flattening a layer

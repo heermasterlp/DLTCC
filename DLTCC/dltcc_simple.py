@@ -59,7 +59,7 @@ checkpoint_path = "../../checkpoints/checkpoints_150_200"
 THEROSHOLD = 0.6
 
 # max training epoch
-MAX_TRAIN_EPOCH = 50000
+MAX_TRAIN_EPOCH = 5000
 
 
 # Train models
@@ -88,11 +88,9 @@ def train():
         print("Build models end!")
 
         # initialize variable
-        # init_op = tf.global_variables_initializer()
         init_op = tf.global_variables_initializer()
 
         # save the models and checkpoints.
-        # the formatting: (models) models-date.ckpt, (checkpoint) checkpoint-date-step.ckpt
         saver = tf.train.Saver()
 
         if not os.path.exists(model_path):
@@ -104,27 +102,26 @@ def train():
         today = "{}-{}-{}".format(now.year, now.month, now.day)
 
         # Train models
-        # config = tf.ConfigProto()
-        # config.gpu_options.allow_growth = True
-        with tf.Session() as sess:
-            sess.run(init_op)
+        with tf.Graph().as_default():
+            with tf.Session() as sess:
+                sess.run(init_op)
 
-            # Train the models
-            for epoch in range(MAX_TRAIN_EPOCH):
-                x_batch, y_batch = data_set.train.next_batch(200)
+                # Train the models
+                for epoch in range(MAX_TRAIN_EPOCH):
+                    x_batch, y_batch = data_set.train.next_batch(200)
 
-                _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
-                                                                       phase_train: True})
+                    _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
+                                                                           phase_train: True})
 
-                if epoch % 100 == 0:
-                    print("Epoch {0} : {1}".format(epoch, cost))
+                    if epoch % 100 == 0:
+                        print("Epoch {0} : {1}".format(epoch, cost))
 
-            duration = time.time() - start_time
-            print("Train time:{}".format(duration))
+                duration = time.time() - start_time
+                print("Train time:{}".format(duration))
 
-            # Save the trained models.
-            saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
-            print("Training end!")
+                # Save the trained models.
+                saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
+                print("Training end!")
 
 
 # Evaluate the models
@@ -279,8 +276,7 @@ def normalize_func(x, minVal, maxVal, newMinVal=0, newMaxVal=1):
     return result
 
 
-
 if __name__ == "__main__":
-    train()
-    # evaluate()
+    # train()
+    evaluate()
     # test_inference()
