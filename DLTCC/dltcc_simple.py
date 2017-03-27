@@ -277,6 +277,6 @@ def normalize_func(x, minVal, maxVal, newMinVal=0, newMaxVal=1):
 
 
 if __name__ == "__main__":
-    # train()
-    evaluate()
+    train()
+    # evaluate()
     # test_inference()
