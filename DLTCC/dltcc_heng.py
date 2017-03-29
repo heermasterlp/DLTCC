@@ -553,6 +553,6 @@ def batch_norm(input, phase_train, scope="batch_normal"):
 
 
 if __name__ == "__main__":
-    # train()
+    train()
     # evaluate()
-    test_inference()
+    # test_inference()
