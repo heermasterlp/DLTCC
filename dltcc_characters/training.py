@@ -60,8 +60,8 @@ def train():
 
         # Loss
         with tf.device("gpu:0"):
-            # cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
-            cost_op = tf.reduce_mean(tf.abs(y_true * tf.log(dltcc_obj.y_prob) + (1 - y_true) * tf.log(1 - dltcc_obj.y_prob)))
+            cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
+            # cost_op = tf.reduce_mean(tf.abs(y_true * tf.log(dltcc_obj.y_prob) + (1 - y_true) * tf.log(1 - dltcc_obj.y_prob)))
             optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
         print("Build models end!")
