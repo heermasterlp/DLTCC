@@ -17,7 +17,7 @@ class Dltcc(object):
         # Conv 1
         with tf.name_scope("conv1"):
             self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=5,
-                                    use_pooling=False, phase_train=phase_train)
+                                    use_pooling=True, phase_train=phase_train)
 
         with tf.name_scope("conv2"):
             self.conv2 = conv_layer(input=self.conv1, input_channels=5, filter_size=3, output_channels=10,
@@ -25,7 +25,7 @@ class Dltcc(object):
             # Conv 3
         with tf.name_scope("conv3"):
             self.conv3 = conv_layer(input=self.conv2, input_channels=10, filter_size=3, output_channels=20,
-                                    use_pooling=False, phase_train=phase_train)
+                                    use_pooling=True, phase_train=phase_train)
 
             # Conv 4
         with tf.name_scope("conv4"):
