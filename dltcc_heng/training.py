@@ -34,7 +34,7 @@ checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 THEROSHOLD = 0.6
 
 # max training epoch
-MAX_TRAIN_EPOCH = 100000
+MAX_TRAIN_EPOCH = 10000
 
 
 def train():

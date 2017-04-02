@@ -25,12 +25,12 @@ class DltccHeng(object):
             # Conv 3
         with tf.name_scope("conv3"):
             self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32,
-                                    use_pooling=True, phase_train=phase_train)
+                                    use_pooling=False, phase_train=phase_train)
 
             # Conv 4
         with tf.name_scope("conv4"):
             self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64,
-                                    use_pooling=False, phase_train=phase_train)
+                                    use_pooling=True, phase_train=phase_train)
         # Conv 5
         with tf.name_scope("conv5"):
             self.conv5 = conv_layer(input=self.conv4, input_channels=64, filter_size=3, output_channels=64,
@@ -87,7 +87,7 @@ def conv_layer(input,  # The previous layer.
                                padding="SAME")
 
     # batch normalization
-    # layer = batch_norm(layer, phase_train=phase_train)
+    layer = batch_norm(layer, phase_train=phase_train)
 
     # Rectified Linear Unit (ReLU).
     layer = tf.nn.relu(layer)
@@ -146,7 +146,7 @@ def new_weights(shape):
 
 
 def new_biases(length):
-    return tf.Variable(tf.constant(0.05, shape=[length]))
+    return tf.Variable(tf.constant(0.01, shape=[length]))
 
 
 def batch_norm(input, phase_train, scope="batch_normal"):
