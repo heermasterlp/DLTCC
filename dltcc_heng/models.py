@@ -31,14 +31,19 @@ class DltccHeng(object):
         with tf.name_scope("conv4"):
             self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True,
                                     phase_train=phase_train)
-
+        # Conv 5
         with tf.name_scope("conv5"):
             self.conv5 = conv_layer(input=self.conv4, input_channels=64, filter_size=3, output_channels=64, use_pooling=True,
                                     phase_train=phase_train)
+        # Conv 6
+        with tf.name_scope("conv6"):
+            self.conv6 = conv_layer(inputs=self.conv5, input_channels=64, filter_size=3, output_channels=128, use_pooling=True,
+                                    phase_train=phase_train)
+
 
             # Flatten layer
         with tf.name_scope("flatten1"):
-            self.layer_flat, self.num_flat_features = flatten_layer(self.conv5)
+            self.layer_flat, self.num_flat_features = flatten_layer(self.conv6)
 
         with tf.name_scope("fc_layer"):
 
