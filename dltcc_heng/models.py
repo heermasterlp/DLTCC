@@ -16,15 +16,15 @@ class DltccHeng(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8, use_pooling=False,
+            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=7, output_channels=8, use_pooling=True,
                                     phase_train=phase_train)
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16, use_pooling=True,
+            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=5, output_channels=16, use_pooling=True,
                                     phase_train=phase_train)
             # Conv 3
         with tf.name_scope("conv3"):
-            self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32, use_pooling=False,
+            self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32, use_pooling=True,
                                     phase_train=phase_train)
 
             # Conv 4
