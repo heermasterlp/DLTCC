@@ -25,7 +25,7 @@ class DltccHeng(object):
             # Conv 3
         with tf.name_scope("conv3"):
             self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32,
-                                    use_pooling=False, phase_train=phase_train)
+                                    use_pooling=True, phase_train=phase_train)
 
             # Conv 4
         with tf.name_scope("conv4"):
