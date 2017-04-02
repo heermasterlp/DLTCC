@@ -27,7 +27,7 @@ train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
 IMAGE_WIDTH = 200
 IMAGE_HEIGHT = 40
 
-model_path = "../../checkpoints/models_200_40_mac"
+model_path = "../../checkpoints/models_200_40_mac_4_1"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # threshold
@@ -62,10 +62,10 @@ def train():
         dltcc_obj.build(x, phase_train, IMAGE_WIDTH, IMAGE_HEIGHT)
 
         # Loss
-        with tf.device("cpu:0"):
+        with tf.device("gpu:0"):
             # cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
             cost_op = tf.reduce_mean(tf.abs(y_true * tf.log(dltcc_obj.y_prob) + (1-y_true)*tf.log(1-dltcc_obj.y_prob)))
-            optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
+            optimizer_op = tf.train.RMSPropOptimizer(0.1).minimize(cost_op)
 
         print("Build models end!")
 
@@ -101,7 +101,7 @@ def train():
                                                                        y_true: y_batch,
                                                                        phase_train: True})
 
-                if epoch % 10 == 0:
+                if epoch % 100 == 0:
                     print("Epoch {0} : {1}".format(epoch, cost))
 
             duration = time.time() - start_time
