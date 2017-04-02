@@ -83,7 +83,7 @@ def conv_layer(input,  # The previous layer.
                                padding="SAME")
 
     # batch normalization
-    layer = batch_norm(layer, phase_train=phase_train)
+    # layer = batch_norm(layer, phase_train=phase_train)
 
     # Rectified Linear Unit (ReLU).
     layer = tf.nn.relu(layer)
