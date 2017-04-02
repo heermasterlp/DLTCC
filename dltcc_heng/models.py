@@ -16,11 +16,11 @@ class DltccHeng(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=7, output_channels=8, use_pooling=True,
+            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8, use_pooling=True,
                                     phase_train=phase_train)
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=5, output_channels=16, use_pooling=True,
+            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16, use_pooling=True,
                                     phase_train=phase_train)
             # Conv 3
         with tf.name_scope("conv3"):
@@ -32,9 +32,13 @@ class DltccHeng(object):
             self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True,
                                     phase_train=phase_train)
 
+        with tf.name_scope("conv5"):
+            self.conv5 = conv_layer(input=self.conv4, input_channels=64, filter_size=3, output_channels=64, use_pooling=True,
+                                    phase_train=phase_train)
+
             # Flatten layer
         with tf.name_scope("flatten1"):
-            self.layer_flat, self.num_flat_features = flatten_layer(self.conv4)
+            self.layer_flat, self.num_flat_features = flatten_layer(self.conv5)
 
         with tf.name_scope("fc_layer"):
 
