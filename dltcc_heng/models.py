@@ -20,7 +20,7 @@ class DltccHeng(object):
                                     phase_train=phase_train)
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16, use_pooling=False,
+            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16, use_pooling=True,
                                     phase_train=phase_train)
             # Conv 3
         with tf.name_scope("conv3"):
@@ -29,7 +29,7 @@ class DltccHeng(object):
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=False,
+            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64, use_pooling=True,
                                     phase_train=phase_train)
 
             # Flatten layer
