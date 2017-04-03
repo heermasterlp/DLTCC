@@ -34,7 +34,7 @@ checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 THEROSHOLD = 0.6
 
 # max training epoch
-MAX_TRAIN_EPOCH = 1000000
+MAX_TRAIN_EPOCH = 100000
 
 
 def train():
@@ -109,6 +109,10 @@ def train():
             # Save the trained models.
             saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
             print("Training end!{}".format(duration))
+
+def _tensor_size(tensor):
+    for operator import mul
+
 
 if __name__ == '__main__':
     train()
