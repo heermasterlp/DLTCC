@@ -110,8 +110,6 @@ def train():
             saver.save(sess, os.path.join(model_path, "models-{}".format(today)))
             print("Training end!{}".format(duration))
 
-def _tensor_size(tensor):
-    for operator import mul
 
 
 if __name__ == '__main__':
