@@ -7,48 +7,85 @@ class DltccHeng(object):
     def __init__(self):
         pass
 
-    # Build the models
-    def build(self, inputs, phase_train, width, height):
-        if inputs is None:
-            print("Input should not none!")
+        # Build the models
+        def build(self, inputs, phase_train, img_width, img_height):
+            if inputs is None:
+                print("Input should not none!")
 
-        self.x_reshape = tf.reshape(inputs, [-1, width, height, 1], name="x_reshape")
+            self.x_reshape = tf.reshape(inputs, [-1, img_width, img_height, 1], name="x_reshape")
 
-        # Conv 1
-        with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8,
-                                    use_pooling=False, phase_train=phase_train)
+            # Conv 1
+            with tf.name_scope("conv1"):
+                self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=5,
+                                        use_pooling=True, phase_train=phase_train)
 
-        with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16,
-                                    use_pooling=True, phase_train=phase_train)
-            # Conv 3
-        with tf.name_scope("conv3"):
-            self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32,
-                                    use_pooling=False, phase_train=phase_train)
+            with tf.name_scope("conv2"):
+                self.conv2 = conv_layer(input=self.conv1, input_channels=5, filter_size=3, output_channels=10,
+                                        use_pooling=True, phase_train=phase_train)
+                # Conv 3
+            with tf.name_scope("conv3"):
+                self.conv3 = conv_layer(input=self.conv2, input_channels=10, filter_size=3, output_channels=20,
+                                        use_pooling=True, phase_train=phase_train)
 
-            # Conv 4
-        with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64,
-                                    use_pooling=True, phase_train=phase_train)
-        # Conv 5
-        with tf.name_scope("conv5"):
-            self.conv5 = conv_layer(input=self.conv4, input_channels=64, filter_size=3, output_channels=64,
-                                    use_pooling=True, phase_train=phase_train)
+                # Conv 4
+            with tf.name_scope("conv4"):
+                self.conv4 = conv_layer(input=self.conv3, input_channels=20, filter_size=3, output_channels=25,
+                                        use_pooling=True, phase_train=phase_train)
 
-            # Flatten layer
-        with tf.name_scope("flatten1"):
-            self.layer_flat, self.num_flat_features = flatten_layer(self.conv5)
+                # Flatten layer
+            with tf.name_scope("flatten"):
+                self.layer_flat, self.num_flat_features = flatten_layer(self.conv4)
 
-        with tf.name_scope("fc_layer"):
+            with tf.name_scope("fc_layer"):
+                self.layer_fc1 = new_fc_layer(self.layer_flat, num_inputs=self.num_flat_features,
+                                              num_outputs=img_width * img_height)
+                # self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
 
-            self.layer_fc2 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
-                                     num_outputs=width * height, use_sigmoid=True)
+            with tf.name_scope("prob"):
+                self.y_prob = tf.sigmoid(self.layer_fc1)
 
-            # Predict
-        with tf.name_scope("probability"):
-            # layer_dropped = tf.nn.dropout(layer_fc2, keep_prob=1.0)
-            self.y_prob = tf.sigmoid(self.layer_fc2)
+    # # Build the models
+    # def build(self, inputs, phase_train, width, height):
+    #     if inputs is None:
+    #         print("Input should not none!")
+    #
+    #     self.x_reshape = tf.reshape(inputs, [-1, width, height, 1], name="x_reshape")
+    #
+    #     # Conv 1
+    #     with tf.name_scope("conv1"):
+    #         self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=8,
+    #                                 use_pooling=False, phase_train=phase_train)
+    #
+    #     with tf.name_scope("conv2"):
+    #         self.conv2 = conv_layer(input=self.conv1, input_channels=8, filter_size=3, output_channels=16,
+    #                                 use_pooling=True, phase_train=phase_train)
+    #         # Conv 3
+    #     with tf.name_scope("conv3"):
+    #         self.conv3 = conv_layer(input=self.conv2, input_channels=16, filter_size=3, output_channels=32,
+    #                                 use_pooling=False, phase_train=phase_train)
+    #
+    #         # Conv 4
+    #     with tf.name_scope("conv4"):
+    #         self.conv4 = conv_layer(input=self.conv3, input_channels=32, filter_size=3, output_channels=64,
+    #                                 use_pooling=True, phase_train=phase_train)
+    #     # Conv 5
+    #     with tf.name_scope("conv5"):
+    #         self.conv5 = conv_layer(input=self.conv4, input_channels=64, filter_size=3, output_channels=64,
+    #                                 use_pooling=True, phase_train=phase_train)
+    #
+    #         # Flatten layer
+    #     with tf.name_scope("flatten1"):
+    #         self.layer_flat, self.num_flat_features = flatten_layer(self.conv5)
+    #
+    #     with tf.name_scope("fc_layer"):
+    #
+    #         self.layer_fc2 = new_fc_layer(input=self.layer_flat, num_inputs=self.num_flat_features,
+    #                                  num_outputs=width * height, use_sigmoid=True)
+    #
+    #         # Predict
+    #     with tf.name_scope("probability"):
+    #         # layer_dropped = tf.nn.dropout(layer_fc2, keep_prob=1.0)
+    #         self.y_prob = tf.sigmoid(self.layer_fc2)
 
 
 # Create a new Convolution layer
