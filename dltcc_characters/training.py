@@ -87,7 +87,7 @@ def train():
 
         with tf.device('gpu:0'), tf.name_scope('train'):
             with tf.name_scope('loss'):
-                pixel_loss = tf.reduce_meam(tf.abs(y_image, y_pre_img))
+                pixel_loss = tf.reduce_mean(tf.abs(y_image, y_pre_img))
                 tv_loss = 0.002 * total_variation_loss(y_pre_img, IMAGE_WIDTH)
                 combined_loss = pixel_loss + tv_loss
             optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(combined_loss)
