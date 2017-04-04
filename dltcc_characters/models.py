@@ -16,25 +16,54 @@ class Dltcc(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=5,
-                                    use_pooling=True, phase_train=phase_train)
+            self.conv1_1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=5,
+                                      phase_train=phase_train)
+            self.relu1_1 = tf.nn.relu(self.conv1_1)
+
+            self.conv1_2 = conv_layer(self.relu1_1, input_channels=5, filter_size=3, output_channels=5,
+                                      phase_train=phase_train)
+            self.relu1_2 = tf.nn.relu(self.conv1_2)
+
+            self.pool1 = tf.nn.max_pool(value=self.relu1_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
 
         with tf.name_scope("conv2"):
-            self.conv2 = conv_layer(input=self.conv1, input_channels=5, filter_size=3, output_channels=10,
-                                    use_pooling=True, phase_train=phase_train)
+            self.conv2_1 = conv_layer(input=self.pool1, input_channels=5, filter_size=3, output_channels=10,
+                                      phase_train=phase_train)
+            self.relu2_1 = tf.nn.relu(self.conv2_1)
+
+            self.conv2_2 = conv_layer(input=self.relu2_1, input_channels=10, filter_size=3, output_channels=10,
+                                      phase_train=phase_train)
+            self.relu2_2 = tf.nn.relu(self.conv2_2)
+
+            self.pool2 = tf.nn.max_pool(value=self.relu2_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
+
             # Conv 3
         with tf.name_scope("conv3"):
-            self.conv3 = conv_layer(input=self.conv2, input_channels=10, filter_size=3, output_channels=20,
-                                    use_pooling=True, phase_train=phase_train)
+            self.conv3_1 = conv_layer(input=self.pool2, input_channels=10, filter_size=3, output_channels=20,
+                                      phase_train=phase_train)
+            self.relu3_1 = tf.nn.relu(self.conv3_1)
+
+            self.conv3_2 = conv_layer(input=self.relu3_1, input_channels=20, filter_size=3, output_channels=20,
+                                      phase_train=phase_train)
+            self.relu3_2 = tf.nn.relu(self.conv3_2)
+
+            self.pool3 = tf.nn.max_pool(value=self.relu3_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4 = conv_layer(input=self.conv3, input_channels=20, filter_size=3, output_channels=25,
-                                    use_pooling=True, phase_train=phase_train)
+            self.conv4_1 = conv_layer(input=self.pool3, input_channels=20, filter_size=3, output_channels=30,
+                                      phase_train=phase_train)
+            self.relu4_1 = tf.nn.relu(self.conv4_1)
+
+            self.conv4_2 = conv_layer(input=self.relu4_1, input_channels=30, filter_size=3, output_channels=3,
+                                      phase_train=phase_train)
+            self.relu4_2 = tf.nn.relu(self.conv4_2)
+
+            self.pool4 = tf.nn.max_pool(value=self.relu4_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
 
             # Flatten layer
         with tf.name_scope("flatten"):
-            self.layer_flat, self.num_flat_features = flatten_layer(self.conv4)
+            self.layer_flat, self.num_flat_features = flatten_layer(self.pool4)
 
         with tf.name_scope("fc_layer"):
 
@@ -51,7 +80,6 @@ def conv_layer(input,  # The previous layer.
                    input_channels,  # Num. channels in prev. layer.
                    filter_size,  # Width and height of each filter.
                    output_channels,  # Number of filters.
-                   use_pooling=True,
                    phase_train=True):  # Use 2x2 max-pooling.
 
     # Shape of the filter-weights for the convolution.
@@ -75,17 +103,17 @@ def conv_layer(input,  # The previous layer.
     layer += biases
 
     # Use pooling to down-sample the image resolution?
-    if use_pooling:
-        layer = tf.nn.max_pool(value=layer,
-                               ksize=[1, 2, 2, 1],
-                               strides=[1, 2, 2, 1],
-                               padding="SAME")
+    # if use_pooling:
+    #     layer = tf.nn.max_pool(value=layer,
+    #                            ksize=[1, 2, 2, 1],
+    #                            strides=[1, 2, 2, 1],
+    #                            padding="SAME")
 
     # batch normalization
     layer = batch_norm(layer, phase_train=phase_train)
 
     # Rectified Linear Unit (ReLU).
-    layer = tf.nn.relu(layer)
+    # layer = tf.nn.relu(layer)
 
     return layer
 
