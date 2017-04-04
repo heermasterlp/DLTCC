@@ -40,10 +40,10 @@ class Dltcc(object):
 
             self.layer_fc1 = new_fc_layer(self.layer_flat, num_inputs=self.num_flat_features,
                                           num_outputs=img_width*img_height)
-            # self.dropput1= tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
 
         with tf.name_scope("prob"):
-            self.y_prob = tf.sigmoid(self.layer_fc1)
+            self.dropput1 = tf.nn.dropout(self.layer_fc1, keep_prob=0.6)
+            self.y_prob = tf.sigmoid(self.dropput1)
 
 
 # Create a new Convolution layer
