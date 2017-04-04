@@ -55,11 +55,11 @@ class Dltcc(object):
                                       phase_train=phase_train)
             self.relu4_1 = tf.nn.relu(self.conv4_1)
 
-            self.conv4_2 = conv_layer(input=self.relu4_1, input_channels=20, filter_size=3, output_channels=20,
-                                      phase_train=phase_train)
-            self.relu4_2 = tf.nn.relu(self.conv4_2)
+            # self.conv4_2 = conv_layer(input=self.relu4_1, input_channels=20, filter_size=3, output_channels=20,
+            #                           phase_train=phase_train)
+            # self.relu4_2 = tf.nn.relu(self.conv4_2)
 
-            self.pool4 = tf.nn.max_pool(value=self.relu4_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
+            self.pool4 = tf.nn.max_pool(value=self.relu4_1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
 
             # Flatten layer
         with tf.name_scope("flatten"):
