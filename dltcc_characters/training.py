@@ -59,12 +59,8 @@ def train():
         dltcc_obj.build(x, phase_train, IMAGE_WIDTH, IMAGE_HEIGHT)
 
         # Loss
-        with tf.device("gpu:0"):
+        with tf.device("cpu:0"):
             cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
-            # cost_op = tf.reduce_mean(tf.abs(y_true * tf.log(dltcc_obj.y_prob)+
-            # (1 - y_true) * tf.log(1 - dltcc_obj.y_prob)))
-
-
             optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
         print("Build models end!")
@@ -95,7 +91,7 @@ def train():
                 _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
                                                                            phase_train: True})
 
-                if epoch % 100 == 0:
+                if epoch % 10 == 0:
                     print("Epoch {0} : {1}".format(epoch, cost))
 
             duration = time.time() - start_time
