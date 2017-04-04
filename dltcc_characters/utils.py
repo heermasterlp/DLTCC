@@ -19,7 +19,7 @@ def conv2d_block(X, shape, strides, padding, scope='conv2d'):
 
 def max_pool(X, scope='max_pool'):
     with tf.name_scope(scope):
-        return tf.nn.max_pool(X, ksize=[1, 2, 2, 1], padding='SAME')
+        return tf.nn.max_pool(X, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
 def batch_norm(X, phase_train, scope='batch_normal'):
