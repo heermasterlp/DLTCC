@@ -34,7 +34,7 @@ IMAGE_HEIGHT = SIZE
 
 # model_path = "../../checkpoints/models_50_50"
 # checkpoint_path = "../../checkpoints/checkpoints_50_50"
-model_path = "../../checkpoints/models_150_200_4_1"
+model_path = "../../checkpoints/models_150_200_4_4"
 checkpoint_path = "../../checkpoints/checkpoints_150_200"
 
 # threshold
