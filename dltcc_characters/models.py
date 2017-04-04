@@ -51,11 +51,11 @@ class Dltcc(object):
 
             # Conv 4
         with tf.name_scope("conv4"):
-            self.conv4_1 = conv_layer(input=self.pool3, input_channels=40, filter_size=3, output_channels=50,
+            self.conv4_1 = conv_layer(input=self.pool3, input_channels=40, filter_size=3, output_channels=45,
                                       phase_train=phase_train)
             self.relu4_1 = tf.nn.relu(self.conv4_1)
 
-            self.conv4_2 = conv_layer(input=self.relu4_1, input_channels=50, filter_size=3, output_channels=55,
+            self.conv4_2 = conv_layer(input=self.relu4_1, input_channels=45, filter_size=3, output_channels=50,
                                       phase_train=phase_train)
             self.relu4_2 = tf.nn.relu(self.conv4_2)
 
