@@ -20,18 +20,18 @@ class Dltcc(object):
                                       phase_train=phase_train)
             self.relu1_1 = tf.nn.relu(self.conv1_1)
 
-            self.conv1_2 = conv_layer(self.relu1_1, input_channels=5, filter_size=3, output_channels=10,
+            self.conv1_2 = conv_layer(self.relu1_1, input_channels=5, filter_size=3, output_channels=5,
                                       phase_train=phase_train)
             self.relu1_2 = tf.nn.relu(self.conv1_2)
 
             self.pool1 = tf.nn.max_pool(value=self.relu1_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
 
         with tf.name_scope("conv2"):
-            self.conv2_1 = conv_layer(input=self.pool1, input_channels=10, filter_size=3, output_channels=15,
+            self.conv2_1 = conv_layer(input=self.pool1, input_channels=5, filter_size=3, output_channels=10,
                                       phase_train=phase_train)
             self.relu2_1 = tf.nn.relu(self.conv2_1)
 
-            self.conv2_2 = conv_layer(input=self.relu2_1, input_channels=15, filter_size=3, output_channels=20,
+            self.conv2_2 = conv_layer(input=self.relu2_1, input_channels=10, filter_size=3, output_channels=10,
                                       phase_train=phase_train)
             self.relu2_2 = tf.nn.relu(self.conv2_2)
 
@@ -39,11 +39,11 @@ class Dltcc(object):
 
             # Conv 3
         with tf.name_scope("conv3"):
-            self.conv3_1 = conv_layer(input=self.pool2, input_channels=20, filter_size=3, output_channels=25,
+            self.conv3_1 = conv_layer(input=self.pool2, input_channels=10, filter_size=3, output_channels=15,
                                       phase_train=phase_train)
             self.relu3_1 = tf.nn.relu(self.conv3_1)
 
-            self.conv3_2 = conv_layer(input=self.relu3_1, input_channels=25, filter_size=3, output_channels=25,
+            self.conv3_2 = conv_layer(input=self.relu3_1, input_channels=15, filter_size=3, output_channels=20,
                                       phase_train=phase_train)
             self.relu3_2 = tf.nn.relu(self.conv3_2)
 
