@@ -28,7 +28,7 @@ model_path = "../../checkpoints/models_150_200_4_1"
 checkpoint_path = "../../checkpoints/checkpoints_150_200"
 
 # threshold
-THEROSHOLD = 0.8
+THEROSHOLD = 0.6
 
 
 def inference(input, target):
@@ -86,11 +86,11 @@ def test_inference():
     # Data set
     data_set = input_data.read_data_sets(train_dir, validation_size=40)
 
-    index = 14
+    index = 100
 
-    input = data_set.test.data[index]
+    input = data_set.train.data[index]
     input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
-    target = data_set.test.target[index]
+    target = data_set.train.target[index]
     # Predict
     predict = inference(input, target)
 
@@ -107,7 +107,9 @@ def test_inference():
     print(np.amin(predict))
     print(np.mean(predict))
 
+    ImageDisplay.show_bitmap(input)
+    ImageDisplay.show_bitmap(predict)
+    ImageDisplay.show_bitmap(target)
 
-    # ImageDisplay.show_bitmap(input)
-    # ImageDisplay.show_bitmap(predict)
-    # ImageDisplay.show_bitmap(target)
+if __name__ == "__main__":
+    test_inference()

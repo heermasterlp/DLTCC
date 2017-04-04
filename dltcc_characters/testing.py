@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 import input_data
 import models
@@ -26,7 +27,7 @@ model_path = "../../checkpoints/models_150_200_4_1"
 checkpoint_path = "../../checkpoints/checkpoints_150_200"
 
 # threshold
-THEROSHOLD = 0.8
+THEROSHOLD = 0.6
 
 
 # Evaluate the models
@@ -37,7 +38,7 @@ def test():
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = data_set.train.target
+    y_true = data_set.test.target
     phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
@@ -58,7 +59,7 @@ def test():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data,
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.test.data,
                                                            phase_train: False})
 
         if prediction is None:
@@ -68,10 +69,13 @@ def test():
         assert prediction.shape == y_true.shape
 
         # average accuracy
-        avg_accuracy = 0.0
         accuracy = 0.0
         for x in range(prediction.shape[0]):
             prediction_item = prediction[x]
+            print(prediction_item)
+            pred_arr = np.array(prediction_item)
+            print(np.amin(pred_arr))
+            print(np.amax(pred_arr))
             y_pred = []
             for y in range(prediction_item.shape[0]):
                 if prediction_item[y] > THEROSHOLD:

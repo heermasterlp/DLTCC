@@ -11,16 +11,17 @@ import tensorflow as tf
 
 import models
 import os
+from utils import normalize_func
 
 
 SIZE = 150
 IMAGE_WIDTH = SIZE
 IMAGE_HEIGHT = SIZE
 
-model_path = "../../checkpoints/models_150_200"
+model_path = "../../checkpoints/models_150_200_4_1"
 checkpoint_path = "../../checkpoints/checkpoints_200_40"
 
-#threshold
+# threshold
 THEROSHOLD = 0.6
 
 input_list = []
@@ -63,6 +64,7 @@ img_TK_True = None
 img_True = None
 
 var_filelist = tk.StringVar(value=input_filename_list)
+var_threshold = tk.StringVar(value=THEROSHOLD)
 
 var_accuracy = tk.StringVar()
 E_Accuracy = tk.Entry(root, textvariable=var_accuracy, borderwidth=3, highlightcolor='red', state='disabled')
@@ -84,6 +86,9 @@ btn_Predict = tk.Button(root, text="Predict", command=lambda: predict(canvas_pre
 
 lbox = tk.Listbox(root, listvariable=var_filelist, height=10)
 
+theroshold_bar = tk.Scale(root, variable=var_threshold, from_=0, to=1, orient=tk.HORIZONTAL, resolution=0.0001,
+                          digits=3)
+
 label_Input.grid(row=0, column=2, sticky=tk.W+tk.E)
 label_Predict.grid(row=0, column=3, sticky=tk.W+tk.E)
 label_Compare.grid(row=2, column=2, sticky=tk.W+tk.E)
@@ -101,6 +106,8 @@ E_Accuracy.grid(row=1, column=0, sticky=tk.S+tk.W+tk.E)
 
 lbox.grid(row=3, column=0, padx=5, pady=0, sticky=tk.W+tk.E)
 
+theroshold_bar.grid(row=4, column=0, sticky=tk.W+tk.E)
+
 fig = Figure(figsize=(3, 3), dpi=26)
 fig.canvas = FigureCanvasTkAgg(fig, master=root)
 fig.canvas.show()
@@ -113,8 +120,10 @@ def open(canvas_input, canvas_true):
     global input_filename_list
     global input_dir
     global target_dir
+    global Image_index
 
     # clear
+    Image_index = 0
     input_list = []
     target_list = []
     input_filename_list = []
@@ -138,7 +147,6 @@ def open(canvas_input, canvas_true):
 
     var_filelist.set(input_filename_list)
     try:
-        global Image_index
         input_img = input_list[Image_index]
         target_img = target_list[Image_index]
 
@@ -216,9 +224,14 @@ def predict(canvas, canvas_compare):
     global img_TK_Predict
     global img_Predict
 
+    global THEROSHOLD
+
+    THEROSHOLD = float(var_threshold.get())
+
     input_bitmap = np.array(img_Input.convert("1"))
 
     input_array = input_bitmap.reshape(input_bitmap.shape[0] * input_bitmap.shape[1])
+
     input_array = np.reshape(input_array, [-1, input_bitmap.shape[0] * input_bitmap.shape[1]])
 
     if input_array is None:
@@ -229,9 +242,16 @@ def predict(canvas, canvas_compare):
 
     if prediction is None:
         return
+
+    pred_arr = np.array(prediction)
+
+    minPredVal = np.amin(pred_arr)
+    maxPredVal = np.amax(pred_arr)
+    prediction_normed = normalize_func(pred_arr, minVal=minPredVal, maxVal=maxPredVal)
+
     img_pred = []
-    for index in range(prediction.shape[1]):
-        if prediction[0][index] >= THEROSHOLD:
+    for index in range(prediction_normed.shape[1]):
+        if prediction_normed[0][index] > THEROSHOLD:
             img_pred.append(1)
         else:
             img_pred.append(0)
