@@ -1,12 +1,9 @@
 import tensorflow as tf
 import os
 import datetime
-import numpy as np
 import time
 
 import input_data
-import ImageDisplay
-
 import models
 
 
