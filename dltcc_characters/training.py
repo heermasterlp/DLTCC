@@ -60,9 +60,7 @@ def train():
         # Loss
         with tf.device("gpu:0"):
             cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
-            tv_cost_op = 0.002 * utils._total_variation_loss(dltcc_obj.y_prob)
-            combined_cost = tv_cost_op + cost_op
-            optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(combined_cost)
+            optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
         print("Build models end!")
 
@@ -89,10 +87,10 @@ def train():
             for epoch in range(MAX_TRAIN_EPOCH):
                 x_batch, y_batch = data_set.train.next_batch(200)
 
-                _, cost = sess.run([optimizer_op, combined_cost], feed_dict={x: x_batch, y_true: y_batch,
+                _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
                                                                            phase_train: True})
 
-                if epoch % 10 == 0:
+                if epoch % 100 == 0:
                     print("Epoch {0} : {1}".format(epoch, cost))
 
             duration = time.time() - start_time

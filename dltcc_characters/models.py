@@ -16,22 +16,22 @@ class Dltcc(object):
 
         # Conv 1
         with tf.name_scope("conv1"):
-            self.conv1_1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=3, output_channels=4,
+            self.conv1_1 = conv_layer(input=self.x_reshape, input_channels=1, filter_size=7, output_channels=4,
                                       phase_train=phase_train)
             self.relu1_1 = tf.nn.relu(self.conv1_1)
 
-            self.conv1_2 = conv_layer(self.relu1_1, input_channels=4, filter_size=3, output_channels=4,
+            self.conv1_2 = conv_layer(self.relu1_1, input_channels=4, filter_size=5, output_channels=4,
                                       phase_train=phase_train)
             self.relu1_2 = tf.nn.relu(self.conv1_2)
 
             self.pool1 = tf.nn.max_pool(value=self.relu1_2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
 
         with tf.name_scope("conv2"):
-            self.conv2_1 = conv_layer(input=self.pool1, input_channels=4, filter_size=3, output_channels=8,
+            self.conv2_1 = conv_layer(input=self.pool1, input_channels=4, filter_size=5, output_channels=8,
                                       phase_train=phase_train)
             self.relu2_1 = tf.nn.relu(self.conv2_1)
 
-            self.conv2_2 = conv_layer(input=self.relu2_1, input_channels=8, filter_size=3, output_channels=8,
+            self.conv2_2 = conv_layer(input=self.relu2_1, input_channels=8, filter_size=5, output_channels=8,
                                       phase_train=phase_train)
             self.relu2_2 = tf.nn.relu(self.conv2_2)
 
