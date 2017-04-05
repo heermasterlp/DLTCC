@@ -6,6 +6,8 @@ import time
 import input_data
 import models
 
+import utils
+
 
 # 150x150 data set
 train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_150_150_200_train.npy"
@@ -34,7 +36,7 @@ checkpoint_path = "../../checkpoints/checkpoints_150_200"
 THEROSHOLD = 0.8
 
 # max training epoch
-MAX_TRAIN_EPOCH = 100000
+MAX_TRAIN_EPOCH = 100
 
 
 # Train models
@@ -58,7 +60,9 @@ def train():
         # Loss
         with tf.device("gpu:0"):
             cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
-            optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
+            tv_cost_op = 0.002 * utils._total_variation_loss(dltcc_obj.y_prob)
+            combined_cost = tv_cost_op + cost_op
+            optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(combined_cost)
 
         print("Build models end!")
 
@@ -85,10 +89,10 @@ def train():
             for epoch in range(MAX_TRAIN_EPOCH):
                 x_batch, y_batch = data_set.train.next_batch(200)
 
-                _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
+                _, cost = sess.run([optimizer_op, combined_cost], feed_dict={x: x_batch, y_true: y_batch,
                                                                            phase_train: True})
 
-                if epoch % 100 == 0:
+                if epoch % 10 == 0:
                     print("Epoch {0} : {1}".format(epoch, cost))
 
             duration = time.time() - start_time

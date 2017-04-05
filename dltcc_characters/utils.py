@@ -69,10 +69,10 @@ def construct_network(X, size, infilters, outfilters, laywers, phase_train,
         return cur_conv
 
 
-def total_variation_loss(x, side):
+def _total_variation_loss(x):
     """
         Total variation loss for regularization of image smoothness
         """
-    loss = tf.nn.l2_loss(x[:, 1:, :, :] - x[:, :side - 1, :, :]) / side + \
-           tf.nn.l2_loss(x[:, :, 1:, :] - x[:, :, :side - 1, :]) / side
-    return loss
+    value = tf.reduce_sum(tf.abs(x[:, 1:, :, :] - x[:, :-1, :, :])) + \
+            tf.reduce_sum(tf.abs(x[:, :, 1:, :] - x[:, :, :-1, :]))
+    return value
