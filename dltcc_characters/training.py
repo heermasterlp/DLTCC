@@ -88,7 +88,7 @@ def train():
                 _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch, y_true: y_batch,
                                                                            phase_train: True})
 
-                if epoch % 10 == 0:
+                if epoch % 100 == 0:
                     print("Epoch {0} : {1}".format(epoch, cost))
 
             duration = time.time() - start_time
