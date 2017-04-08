@@ -4,8 +4,9 @@ import tensorflow as tf
 import numpy as np
 
 import input_data
-import models
-from utils import normalize_func
+import net_2_hidden
+
+import utils
 
 
 # 200x40 data set
@@ -26,7 +27,7 @@ train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
 IMAGE_WIDTH = 200
 IMAGE_HEIGHT = 40
 
-model_path = "../../checkpoints/models_200_40_mac_4_1"
+model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # threshold
@@ -47,8 +48,7 @@ def test():
     phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
-    dltcc_obj = models.DltccHeng()
-    dltcc_obj.build(x, phase_train, IMAGE_WIDTH, IMAGE_HEIGHT)
+    y_pred = net_2_hidden.net(x, IMAGE_WIDTH, IMAGE_HEIGHT)
 
     # Saver
     saver = tf.train.Saver()
@@ -64,7 +64,7 @@ def test():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.test.data, phase_train: False})
+        prediction = sess.run(y_pred, feed_dict={x: data_set.test.data, phase_train: False})
 
         if prediction is None:
             print("Prediction is none")
@@ -84,7 +84,7 @@ def test():
 
             minPredVal = np.amin(pred_arr)
             maxPredVal = np.amax(pred_arr)
-            prediction_normed = normalize_func(pred_arr, minVal=minPredVal, maxVal=maxPredVal)
+            prediction_normed = utils._normalize_func(pred_arr, minVal=minPredVal, maxVal=maxPredVal)
 
             y_pred = []
             for y in range(prediction_normed.shape[0]):

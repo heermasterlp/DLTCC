@@ -4,6 +4,8 @@ import tensorflow as tf
 import numpy as np
 
 import input_data
+import net_2_hidden
+
 import models
 import ImageDisplay
 
@@ -26,11 +28,11 @@ train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
 IMAGE_WIDTH = 200
 IMAGE_HEIGHT = 40
 
-model_path = "../../checkpoints/models_200_40_mac_4_1"
+model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # threshold
-THEROSHOLD = 0.6
+THEROSHOLD = 0.9
 
 
 def inference(input):
@@ -39,11 +41,9 @@ def inference(input):
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
-    dltcc_obj = models.DltccHeng()
-    dltcc_obj.build(x, phase_train, IMAGE_WIDTH, IMAGE_HEIGHT)
+    y_pred = net_2_hidden.net(x, IMAGE_WIDTH, IMAGE_HEIGHT)
 
     # Saver
     saver = tf.train.Saver()
@@ -59,7 +59,7 @@ def inference(input):
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: input, phase_train: False})
+        prediction = sess.run(y_pred, feed_dict={x: input})
 
         print(prediction)
 
