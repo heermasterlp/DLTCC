@@ -22,7 +22,7 @@ def net(X, width, height):
         'h4': tf.Variable(tf.random_normal([n_hidden_3, n_hidden_4])),
         'h5': tf.Variable(tf.random_normal([n_hidden_4, n_hidden_5])),
         'h6': tf.Variable(tf.random_normal([n_hidden_5, n_hidden_6])),
-        'out': tf.Variable(tf.random_normal([n_hidden_2, n_output]))
+        'out': tf.Variable(tf.random_normal([n_hidden_6, n_output]))
     }
 
     biases = {
