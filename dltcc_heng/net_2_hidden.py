@@ -16,23 +16,23 @@ def net(X, width, height):
 
     # Store layers weights & biases
     weights = {
-        'h1': tf.Variable(tf.random_normal([n_input, n_hidden_1])),
-        'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
-        'h3': tf.Variable(tf.random_normal([n_hidden_2, n_hidden_3])),
-        'h4': tf.Variable(tf.random_normal([n_hidden_3, n_hidden_4])),
-        # 'h5': tf.Variable(tf.random_normal([n_hidden_4, n_hidden_5])),
-        # 'h6': tf.Variable(tf.random_normal([n_hidden_5, n_hidden_6])),
-        'out': tf.Variable(tf.random_normal([n_hidden_4, n_output]))
+        'h1': tf.Variable(tf.random_normal([n_input, n_hidden_1], stddev=0.05)),
+        'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2], stddev=0.05)),
+        'h3': tf.Variable(tf.random_normal([n_hidden_2, n_hidden_3], stddev=0.05)),
+        'h4': tf.Variable(tf.random_normal([n_hidden_3, n_hidden_4], stddev=0.05)),
+        # 'h5': tf.Variable(tf.random_normal([n_hidden_4, n_hidden_5], stddev=0.05)),
+        # 'h6': tf.Variable(tf.random_normal([n_hidden_5, n_hidden_6], stddev=0.05)),
+        'out': tf.Variable(tf.random_normal([n_hidden_4, n_output], stddev=0.05))
     }
 
     biases = {
-        'b1': tf.Variable(tf.random_normal([n_hidden_1])),
-        'b2': tf.Variable(tf.random_normal([n_hidden_2])),
-        'b3': tf.Variable(tf.random_normal([n_hidden_3])),
-        'b4': tf.Variable(tf.random_normal([n_hidden_4])),
-        # 'b5': tf.Variable(tf.random_normal([n_hidden_5])),
-        # 'b6': tf.Variable(tf.random_normal([n_hidden_6])),
-        'out': tf.Variable(tf.random_normal([n_output]))
+        'b1': tf.Variable(tf.constant(0.0, [n_hidden_1])),
+        'b2': tf.Variable(tf.constant(0.0, [n_hidden_2])),
+        'b3': tf.Variable(tf.constant(0.0, [n_hidden_3])),
+        'b4': tf.Variable(tf.constant(0.0, [n_hidden_4])),
+        # 'b5': tf.Variable(tf.constant(0.0, [n_hidden_5])),
+        # 'b6': tf.Variable(tf.constant(0.0, [n_hidden_6])),
+        'out': tf.Variable(tf.constant(0.0, [n_output]))
     }
 
     # Hidden 1 layer with RELU activation
