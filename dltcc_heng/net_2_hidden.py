@@ -9,17 +9,29 @@ def net(X, width, height):
 
     n_hidden_1 = 3000
     n_hidden_2 = 2000
+    n_hidden_3 = 3000
+    n_hidden_4 = 4000
+    n_hidden_5 = 3000
+    n_hidden_6 = 3000
 
     # Store layers weights & biases
     weights = {
         'h1': tf.Variable(tf.random_normal([n_input, n_hidden_1])),
         'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
+        'h3': tf.Variable(tf.random_normal([n_hidden_2, n_hidden_3])),
+        'h4': tf.Variable(tf.random_normal([n_hidden_3, n_hidden_4])),
+        'h5': tf.Variable(tf.random_normal([n_hidden_4, n_hidden_5])),
+        'h6': tf.Variable(tf.random_normal([n_hidden_5, n_hidden_6])),
         'out': tf.Variable(tf.random_normal([n_hidden_2, n_output]))
     }
 
     biases = {
         'b1': tf.Variable(tf.random_normal([n_hidden_1])),
         'b2': tf.Variable(tf.random_normal([n_hidden_2])),
+        'b3': tf.Variable(tf.random_normal([n_hidden_3])),
+        'b4': tf.Variable(tf.random_normal([n_hidden_4])),
+        'b5': tf.Variable(tf.random_normal([n_hidden_5])),
+        'b6': tf.Variable(tf.random_normal([n_hidden_6])),
         'out': tf.Variable(tf.random_normal([n_output]))
     }
 
@@ -31,8 +43,20 @@ def net(X, width, height):
     layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
     layer_2 = tf.nn.relu(layer_2)
 
+    layer_3 = tf.add(tf.matmul(layer_2, weights['h3']), biases['b3'])
+    layer_3 = tf.nn.relu(layer_3)
+
+    layer_4 = tf.add(tf.matmul(layer_3, weights['h4']), biases['b4'])
+    layer_4 = tf.nn.relu(layer_4)
+
+    layer_5 = tf.add(tf.matmul(layer_4, weights['h5']), biases['b5'])
+    layer_5 = tf.nn.relu(layer_5)
+
+    layer_6 = tf.add(tf.matmul(layer_5, weights['h6']), biases['b6'])
+    layer_6 = tf.nn.relu(layer_6)
+
     # Output layer with SIGMODE activation
-    out_layer = tf.add(tf.matmul(layer_2, weights['out']), biases['out'])
+    out_layer = tf.add(tf.matmul(layer_6, weights['out']), biases['out'])
 
     out_layer = tf.nn.dropout(out_layer, 0.8)
 
