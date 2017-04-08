@@ -30,8 +30,8 @@ model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # max training epoch
-MAX_TRAIN_EPOCH = 100
-DISPLAY_STEP = 50
+MAX_TRAIN_EPOCH = 10000
+DISPLAY_STEP = 100
 
 def train():
     # Data set
