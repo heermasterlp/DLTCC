@@ -32,7 +32,7 @@ model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # threshold
-THEROSHOLD = 0.9
+THEROSHOLD = 0.6
 
 
 def inference(input):
@@ -81,10 +81,10 @@ def test_inference():
 
     index = 2
 
-    input = data_set.test.data[index]
+    input = data_set.train.data[index]
     input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
 
-    target = data_set.test.target[index]
+    target = data_set.train.target[index]
     # Predict
     predict = inference(input)
 
