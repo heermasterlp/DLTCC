@@ -38,7 +38,7 @@ def test():
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = data_set.test.target
+    y_true = data_set.train.target
     phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
@@ -59,7 +59,7 @@ def test():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.test.data,
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data,
                                                            phase_train: False})
 
         if prediction is None:

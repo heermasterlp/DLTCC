@@ -1,13 +1,25 @@
-from __future__ import absolute_import
-
+import tensorflow as tf
+import os
 import datetime
 import os
 import time
-
-import tensorflow as tf
-
 import input_data
-import models
+
+# Parameters
+learning_rate = 0.001
+training_epochs = 100
+batch_size = 100
+display_step = 10
+
+# Networking parameters
+image_width = 200
+image_height = 40
+
+n_input = image_width * image_height
+n_output = image_width * image_height
+
+n_hidden_1 = 3000
+n_hidden_2 = 2000
 
 # 200x40 data set
 train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
@@ -23,28 +35,9 @@ VALIDATION_SIZE = 50
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-
-IMAGE_WIDTH = 200
-IMAGE_HEIGHT = 40
-
 model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
-# threshold
-THEROSHOLD = 0.6
-
-# max training epoch
-MAX_TRAIN_EPOCH = 1000
-DISPLAY_STEP = 50
-
-
-
-# Networking parameters
-n_input = IMAGE_WIDTH * IMAGE_HEIGHT
-n_output = IMAGE_WIDTH * IMAGE_HEIGHT
-
-n_hidden_1 = 3000
-n_hidden_2 = 2000
 
 # Store layers weights & biases
 weights = {
@@ -72,12 +65,10 @@ def multilayer_perceptron(x, weights, biases):
 
     # Output layer with SIGMODE activation
     out_layer = tf.add(tf.matmul(layer_2, weights['out']), biases['out'])
-
-    out_layer = tf.nn.dropout(out_layer, 0.8)
-
     out_layer = tf.nn.sigmoid(out_layer)
 
     return out_layer
+
 
 def train():
     # Data set
@@ -92,20 +83,19 @@ def train():
         print("data set test data shape:{}".format(data_set.test.data.shape))
         print("data set test target shape:{}".format(data_set.test.target.shape))
 
+
     print("Start build models")
     # place variable
-    x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
-
+    x = tf.placeholder("float", [None, n_input])
+    y_true = tf.placeholder("float", [None, n_output])
 
     # Models
-    y_pred = multilayer_perceptron(x, weights=weights, biases=biases)
-
+    y_pred = multilayer_perceptron(x, weights, biases)
 
     # Loss
     with tf.device("cpu:0"):
-        cost_op = tf.reduce_mean((y_true - y_pred) ** 2)
-        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
+        cost_op = tf.reduce_mean(tf.abs(y_true - y_pred))
+        optimizer_op = tf.train.RMSPropOptimizer(0.1).minimize(cost_op)
 
     print("Build models end!")
 
@@ -125,21 +115,22 @@ def train():
     today = "{}-{}-{}".format(now.year, now.month, now.day)
 
     # Train models
+
     with tf.Session() as sess:
         start_time = time.time()
 
         sess.run(init_op)
 
         # Train the models
-        for epoch in range(MAX_TRAIN_EPOCH):
+        for epoch in range(training_epochs):
             x_batch = data_set.train.data
             y_batch = data_set.train.target
 
             _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch,
-                                                                    y_true: y_batch})
+                                                                       y_true: y_batch})
 
-            if epoch % DISPLAY_STEP == 0:
-                print("Epoch {0} : {1}".format(epoch, cost))
+            if epoch % display_step == 0:
+                    print("Epoch {0} : {1}".format(epoch, cost))
 
         duration = time.time() - start_time
 
@@ -148,6 +139,6 @@ def train():
         print("Training end!{}".format(duration))
 
 
-
 if __name__ == '__main__':
     train()
+

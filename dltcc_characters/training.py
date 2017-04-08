@@ -41,7 +41,7 @@ MAX_TRAIN_EPOCH = 100000
 
 # Train models
 def train():
-    # Data set
+    # Data seterw
     data_set = input_data.read_data_sets(train_dir, validation_size=40)
 
     print("Start build models")

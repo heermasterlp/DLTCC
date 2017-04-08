@@ -11,28 +11,8 @@ import ImageDisplay
 
 import dltcc_models
 
-# 250x250 data set
-# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_250_250_400_train.npy"
-# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_250_250_400_train.npy"
-#
-# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_250_250_40_test.npy"
-# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_250_250_40_test.npy"
 
-# 50x50 data set
-# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_50_50_200_train.npy"
-# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_50_50_200_train.npy"
-#
-# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_50_50_20_test.npy"
-# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_50_50_20_test.npy"
-
-# 100x100 data set
-# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_100_100_200_train.npy"
-# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_100_100_200_train.npy"
-#
-# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_100_100_20_test.npy"
-# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_100_100_20_test.npy"
-
-# 200x200 data set
+# 150x150 data set
 train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_150_150_200_train.npy"
 train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_150_150_200_train.npy"
 
@@ -56,7 +36,7 @@ model_path = "../../checkpoints/models_150_200"
 checkpoint_path = "../../checkpoints/checkpoints_150_200"
 
 # threshold
-THEROSHOLD = 0.6
+THEROSHOLD = 0.8
 
 # max training epoch
 MAX_TRAIN_EPOCH = 5000
@@ -81,7 +61,7 @@ def train():
         dltcc_obj.build(x, phase_train)
 
         # Loss
-        with tf.device("gpu:0"):
+        with tf.device("cpu:0"):
             cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
             optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
 
@@ -132,7 +112,7 @@ def evaluate():
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = data_set.test.target
+    y_true = data_set.train.target
     phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
@@ -153,7 +133,7 @@ def evaluate():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.test.data,
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data,
                                                            phase_train: False})
 
         if prediction is None:
@@ -246,9 +226,9 @@ def test_inference():
 
     index = 14
 
-    input = data_set.train.data[index]
+    input = data_set.test.data[index]
     input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
-    target = data_set.train.target[index]
+    target = data_set.test.target[index]
     # Predict
     predict = inference(input, target)
 
@@ -277,6 +257,6 @@ def normalize_func(x, minVal, maxVal, newMinVal=0, newMaxVal=1):
 
 
 if __name__ == "__main__":
-    train()
+    # train()
     # evaluate()
-    # test_inference()
+    test_inference()

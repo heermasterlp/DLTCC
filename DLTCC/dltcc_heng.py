@@ -63,7 +63,7 @@ def train():
         dltcc_obj.build(x, phase_train)
 
         # Loss
-        with tf.device("gpu:0"):
+        with tf.device("cpu:0"):
             # cost_op = tf.reduce_mean((y_true - dltcc_obj.y_prob) ** 2)
             cost_op = tf.reduce_mean(tf.abs(y_true * tf.log(dltcc_obj.y_prob) + (1-y_true)*tf.log(1-dltcc_obj.y_prob)))
             optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
@@ -226,10 +226,10 @@ def test_inference():
 
     index = 2
 
-    input = data_set.train.data[index]
+    input = data_set.test.data[index]
     input = np.reshape(input, [-1, IMAGE_WIDTH * IMAGE_HEIGHT])
 
-    target = data_set.train.target[index]
+    target = data_set.test.target[index]
     # Predict
     predict = inference(input)
 
@@ -553,6 +553,6 @@ def batch_norm(input, phase_train, scope="batch_normal"):
 
 
 if __name__ == "__main__":
-    train()
+    # train()
     # evaluate()
-    # test_inference()
+    test_inference()

@@ -15,11 +15,11 @@ import dltcc_heng
 import os
 
 
-model_path = "../../checkpoints/models_200_40_"
+model_path = "../../checkpoints/models_200_40_mac"
 checkpoint_path = "../../checkpoints/checkpoints_200_40"
 
 #threshold
-THEROSHOLD = 0.6
+THEROSHOLD = 0.7
 
 input_list = []
 input_filename_list = []

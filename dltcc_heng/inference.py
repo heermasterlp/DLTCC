@@ -26,7 +26,7 @@ train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
 IMAGE_WIDTH = 200
 IMAGE_HEIGHT = 40
 
-model_path = "../../checkpoints/models_200_40_mac"
+model_path = "../../checkpoints/models_200_40_mac_4_1"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # threshold

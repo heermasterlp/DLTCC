@@ -5,6 +5,7 @@ import numpy as np
 
 import input_data
 import models
+from utils import normalize_func
 
 
 # 200x40 data set
@@ -25,11 +26,11 @@ train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
 IMAGE_WIDTH = 200
 IMAGE_HEIGHT = 40
 
-model_path = "../../checkpoints/models_200_40_mac"
+model_path = "../../checkpoints/models_200_40_mac_4_1"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # threshold
-THEROSHOLD = 0.6
+THEROSHOLD = 0.57
 
 
 def test():
@@ -42,7 +43,7 @@ def test():
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = data_set.train.target
+    y_true = data_set.test.target
     phase_train = tf.placeholder(tf.bool, name='phase_train')
 
     # Build models
@@ -63,7 +64,7 @@ def test():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.train.data, phase_train: False})
+        prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: data_set.test.data, phase_train: False})
 
         if prediction is None:
             print("Prediction is none")
@@ -76,9 +77,18 @@ def test():
         accuracy = 0.0
         for x in range(prediction.shape[0]):
             prediction_item = prediction[x]
+            print(prediction_item)
+            pred_arr = np.array(prediction_item)
+            print(min(pred_arr))
+            print(max(pred_arr))
+
+            minPredVal = np.amin(pred_arr)
+            maxPredVal = np.amax(pred_arr)
+            prediction_normed = normalize_func(pred_arr, minVal=minPredVal, maxVal=maxPredVal)
+
             y_pred = []
-            for y in range(prediction_item.shape[0]):
-                if prediction_item[y] > THEROSHOLD:
+            for y in range(prediction_normed.shape[0]):
+                if prediction_normed[y] > THEROSHOLD:
                     y_pred.append(1)
                 else:
                     y_pred.append(0)
@@ -96,6 +106,7 @@ def test():
         avg_accuracy = 1 - accuracy / prediction.shape[0]
 
         print("Avg accuracy:{}".format(avg_accuracy))
+
 
 if __name__ == "__main__":
     test()
