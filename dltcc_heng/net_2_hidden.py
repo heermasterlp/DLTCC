@@ -26,13 +26,13 @@ def net(X, width, height):
     }
 
     biases = {
-        'b1': tf.Variable(tf.constant(0.0, [n_hidden_1])),
-        'b2': tf.Variable(tf.constant(0.0, [n_hidden_2])),
-        'b3': tf.Variable(tf.constant(0.0, [n_hidden_3])),
-        'b4': tf.Variable(tf.constant(0.0, [n_hidden_4])),
-        # 'b5': tf.Variable(tf.constant(0.0, [n_hidden_5])),
-        # 'b6': tf.Variable(tf.constant(0.0, [n_hidden_6])),
-        'out': tf.Variable(tf.constant(0.0, [n_output]))
+        'b1': tf.Variable(tf.constant(0.0, shape=[n_hidden_1])),
+        'b2': tf.Variable(tf.constant(0.0, shape=[n_hidden_2])),
+        'b3': tf.Variable(tf.constant(0.0, shape=[n_hidden_3])),
+        'b4': tf.Variable(tf.constant(0.0, shape=[n_hidden_4])),
+        # 'b5': tf.Variable(tf.constant(0.0, shape=[n_hidden_5])),
+        # 'b6': tf.Variable(tf.constant(0.0, shape=[n_hidden_6])),
+        'out': tf.Variable(tf.constant(0.0, shape=[n_output]))
     }
 
     # Hidden 1 layer with RELU activation
