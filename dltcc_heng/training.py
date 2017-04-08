@@ -7,7 +7,7 @@ import time
 import tensorflow as tf
 
 import input_data
-import models
+import net_2_hidden
 
 # 200x40 data set
 train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
@@ -23,61 +23,15 @@ VALIDATION_SIZE = 50
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-
 IMAGE_WIDTH = 200
 IMAGE_HEIGHT = 40
 
 model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
-# threshold
-THEROSHOLD = 0.6
-
 # max training epoch
-MAX_TRAIN_EPOCH = 1000
+MAX_TRAIN_EPOCH = 100
 DISPLAY_STEP = 50
-
-
-
-# Networking parameters
-n_input = IMAGE_WIDTH * IMAGE_HEIGHT
-n_output = IMAGE_WIDTH * IMAGE_HEIGHT
-
-n_hidden_1 = 3000
-n_hidden_2 = 2000
-
-# Store layers weights & biases
-weights = {
-    'h1': tf.Variable(tf.random_normal([n_input, n_hidden_1])),
-    'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
-    'out': tf.Variable(tf.random_normal([n_hidden_2, n_output]))
-}
-
-biases = {
-    'b1': tf.Variable(tf.random_normal([n_hidden_1])),
-    'b2': tf.Variable(tf.random_normal([n_hidden_2])),
-    'out': tf.Variable(tf.random_normal([n_output]))
-}
-
-
-def multilayer_perceptron(x, weights, biases):
-
-    # Hidden 1 layer with RELU activation
-    layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
-    layer_1 = tf.nn.relu(layer_1)
-
-    # Hidden 2 layer with RELU activation
-    layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
-    layer_2 = tf.nn.relu(layer_2)
-
-    # Output layer with SIGMODE activation
-    out_layer = tf.add(tf.matmul(layer_2, weights['out']), biases['out'])
-
-    out_layer = tf.nn.dropout(out_layer, 0.8)
-
-    out_layer = tf.nn.sigmoid(out_layer)
-
-    return out_layer
 
 def train():
     # Data set
@@ -99,13 +53,12 @@ def train():
 
 
     # Models
-    y_pred = multilayer_perceptron(x, weights=weights, biases=biases)
-
+    y_pred = net_2_hidden.net(x, width=IMAGE_WIDTH, height=IMAGE_HEIGHT)
 
     # Loss
     with tf.device("cpu:0"):
-        cost_op = tf.reduce_mean((y_true - y_pred) ** 2)
-        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(cost_op)
+        loss_op = tf.reduce_mean((y_true - y_pred) ** 2)
+        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(loss_op)
 
     print("Build models end!")
 
@@ -135,7 +88,7 @@ def train():
             x_batch = data_set.train.data
             y_batch = data_set.train.target
 
-            _, cost = sess.run([optimizer_op, cost_op], feed_dict={x: x_batch,
+            _, cost = sess.run([optimizer_op, loss_op], feed_dict={x: x_batch,
                                                                     y_true: y_batch})
 
             if epoch % DISPLAY_STEP == 0:
