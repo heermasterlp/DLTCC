@@ -56,7 +56,7 @@ def train():
     y_pred = net_2_hidden.net(x, width=IMAGE_WIDTH, height=IMAGE_HEIGHT)
 
     # Loss
-    with tf.device("cpu:0"):
+    with tf.device("gpu:0"):
         loss_op = tf.reduce_mean((y_true - y_pred) ** 2)
         optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(loss_op)
 

@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+
 def net(X, width, height):
 
     # Net parameters
