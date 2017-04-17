@@ -68,7 +68,7 @@ D_W2 = tf.Variable(xavier_init([d_h1_dim, d_h2_dim]))
 D_b2 = tf.Variable(tf.zeros(shape=[d_h2_dim]))
 
 D_W3 = tf.Variable(xavier_init([d_h2_dim, d_h3_dim]))
-D_b3 = tf.Varibale(tf.zeros(shape=[d_h3_dim]))
+D_b3 = tf.Variable(tf.zeros(shape=[d_h3_dim]))
 
 D_W4 = tf.Variable(xavier_init([d_h3_dim, d_h4_dim]))
 D_b4 = tf.Variable(tf.zeros(shape=[d_h4_dim]))
