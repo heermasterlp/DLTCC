@@ -81,13 +81,13 @@ G_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
 G_W3 = tf.Variable(xavier_init([h2_dim, h3_dim]))
 G_b3 = tf.Variable(tf.zeros(shape=[h3_dim]))
 
-G_W4 = tf.Variable(xavier_init([h3_dim, h4_dim]))
-G_b4 = tf.Variable(tf.zeros(shape=[h4_dim]))
+# G_W4 = tf.Variable(xavier_init([h3_dim, h4_dim]))
+# G_b4 = tf.Variable(tf.zeros(shape=[h4_dim]))
 
-G_W5 = tf.Variable(xavier_init([h4_dim, X_dim]))
+G_W5 = tf.Variable(xavier_init([h3_dim, X_dim]))
 G_b5 = tf.Variable(tf.zeros(shape=[X_dim]))
 
-theta_G = [G_W1, G_W2, G_W3, G_W4, G_W5, G_b1, G_b2, G_b3, G_b4, G_b5]
+theta_G = [G_W1, G_W2, G_W3, G_W5, G_b1, G_b2, G_b3, G_b5]
 
 
 def generator(z, y):
@@ -95,8 +95,8 @@ def generator(z, y):
     G_h1 = tf.nn.relu(tf.matmul(inputs, G_W1) + G_b1)
     G_h2 = tf.nn.relu(tf.matmul(G_h1, G_W2) + G_b2)
     G_h3 = tf.nn.relu(tf.matmul(G_h2, G_W3) + G_b3)
-    G_h4 = tf.nn.relu(tf.matmul(G_h3, G_W4) + G_b4)
-    G_log_prob = tf.matmul(G_h4, G_W5) + G_b5
+    # G_h4 = tf.nn.relu(tf.matmul(G_h3, G_W4) + G_b4)
+    G_log_prob = tf.matmul(G_h3, G_W5) + G_b5
     G_prob = tf.nn.sigmoid(G_log_prob)
 
     return G_prob
