@@ -4,16 +4,28 @@ from PIL import Image
 import numpy as np
 
 SIZE = 150
-IMAGE_WIDTH = 40
+IMAGE_WIDTH = 200
 IMAGE_HEIGHT = 200
 
+
 # Show images
-def show_bitmap(img_array):
+# def show_bitmap(img_array):
+#     if img_array is None:
+#         print("image array should not none!")
+#         return
+#     img_array = np.array(img_array)
+#     img_reshape = img_array.reshape((IMAGE_WIDTH, IMAGE_HEIGHT))
+#     image = Image.fromarray(np.uint8(img_reshape) * 255)
+#     image.show()
+
+
+# Show images
+def show_bitmap(img_array, image_width, image_height):
     if img_array is None:
         print("image array should not none!")
         return
     img_array = np.array(img_array)
-    img_reshape = img_array.reshape((IMAGE_WIDTH, IMAGE_HEIGHT))
+    img_reshape = img_array.reshape((image_width, image_height))
     image = Image.fromarray(np.uint8(img_reshape) * 255)
     image.show()
 

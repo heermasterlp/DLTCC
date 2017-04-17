@@ -9,11 +9,18 @@ import datetime
 
 
 # 200x200 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_200_200_200_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_200_200_200_train.npy"
+# train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_200_200_200_train.npy"
+# train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_200_200_200_train.npy"
+#
+# test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_200_200_20_test.npy"
+# test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_200_200_20_test.npy"
 
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_200_200_20_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_200_200_20_test.npy"
+# 200x40 data set
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_heng_200_40_30_train.npy"
+
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_heng_200_40_11_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_heng_200_40_11_test.npy"
 
 # train data set files
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
@@ -28,8 +35,13 @@ y_dim = data_set.train.target.shape[1]  # width * height
 z_dim = X_dim                           # width * height
 h_dim = 200
 
+threshold = 0.4
+
+image_width = 200
+image_height = 40
+
 # model saver
-model_dir = "../../checkpoints/models_200_200_4_17"
+model_dir = "../../checkpoints/models_200_200_4_17_heng"
 
 
 def xavier_init(size):
@@ -78,23 +90,6 @@ def generator(z):
 def sample_Z(m, n):
     return np.random.uniform(-1., 1., size=[m, n])
 
-
-def plot(samples):
-    fig = plt.figure(figsize=(4, 4))
-    gs = gridspec.GridSpec(4, 4)
-    gs.update(wspace=0.05, hspace=0.05)
-
-    for i, sample in enumerate(samples):
-        ax = plt.subplot(gs[i])
-        plt.axis('off')
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-        ax.set_aspect('equal')
-        plt.imshow(sample.reshape(200, 200), cmap='Greys_r')
-
-    return fig
-
-
 G_sample = generator(Z)
 D_real = discriminator(X)
 D_fake = discriminator(G_sample)
@@ -131,25 +126,16 @@ def train():
 
             for _ in range(5):
                 X_mb, _ = data_set.train.next_batch(mb_size)
-
                 _, D_loss_curr, _ = sess.run( [D_solver, D_loss, clip_D], feed_dict={X: X_mb, Z: sample_Z(mb_size, z_dim)})
-
             _, G_loss_curr = sess.run( [G_solver, G_loss], feed_dict={Z: sample_Z(mb_size, z_dim)})
 
             if it % 100 == 0:
                 print('Iter: {}; D loss: {:.4}; G_loss: {:.4}'.format(it, D_loss_curr, G_loss_curr))
 
-                # if it % 100 == 0:
-                #     samples = sess.run(G_sample, feed_dict={Z: sample_Z(16, z_dim)})
-
-                    # fig = plot(samples)
-                    # plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
-                    # i += 1
-                    # plt.close(fig)
-
         # Save the trained models.
         saver.save(sess, os.path.join(model_dir, "models-cgan-{}".format(today)))
         print("Training end!")
+
 
 def test():
 
@@ -167,12 +153,19 @@ def test():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(G_sample, feed_dict={Z: data_set.train.data, y: data_set.train.target})
+        prediction = sess.run(G_sample, feed_dict={Z: data_set.test.data, y: data_set.test.target})
 
-        print(prediction.shape)
         for it in range(prediction.shape[0]):
-            y_true = data_set.train.target[it]
+            y_true = data_set.test.target[it]
             y_pred = prediction[it]
+
+            print(y_pred)
+            y_pred_arr = np.array(y_pred)
+            y_pred = filter(y_pred_arr, threshold)
+            print(y_pred_arr.shape[0])
+            maxV = np.amax(y_pred_arr)
+            minV = np.amin(y_pred_arr)
+            print('max:{} min:{}'.format(maxV, minV))
 
             acc_sum = 0
             for i in range(prediction.shape[1]):
@@ -181,9 +174,20 @@ def test():
             acc = acc_sum / prediction.shape[1]
             print('error:{}'.format(acc))
 
-        show_bitmap(data_set.train.data[0])
-        show_bitmap(prediction[0])
-        show_bitmap(data_set.train.target[0])
+            if it == 5:
+                show_bitmap(data_set.test.data[5], image_width, image_height)
+                show_bitmap(data_set.test.target[5], image_width, image_height)
+                show_bitmap(y_pred, image_width, image_height)
+
+
+def filter(array, threshold):
+    result = []
+    for it in range(array.shape[0]):
+        if array[it] >= threshold:
+            result.append(1)
+        else:
+            result.append(0)
+    return np.array(result)
 
 
 if __name__ == '__main__':
