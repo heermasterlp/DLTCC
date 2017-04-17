@@ -33,7 +33,7 @@ mb_size = 32
 X_dim = data_set.train.data.shape[1]    # width * height
 y_dim = data_set.train.target.shape[1]  # width * height
 z_dim = X_dim                           # width * height
-h_dim = 200
+h_dim = 1000
 
 threshold = 0.4
 
@@ -179,10 +179,10 @@ def test():
                 show_bitmap(y_pred, image_width, image_height)
 
 
-def filter(array, threshold):
+def filter(ay, threshold):
     result = []
-    for it in range(array.shape[0]):
-        if array[it] >= threshold:
+    for it in range(ay.shape[0]):
+        if ay[it] >= threshold:
             result.append(1)
         else:
             result.append(0)
@@ -190,5 +190,5 @@ def filter(array, threshold):
 
 
 if __name__ == '__main__':
-    # train()
-    test()
+    train()
+    # test()
