@@ -256,7 +256,7 @@ def train():
     X_reshape = tf.reshape(X, [-1, 200, 200, 1])
     y_reshape = tf.reshape(y, [-1, 200, 200, 1])
 
-    X_batch, y_batch = tf.train.batch([X_reshape, y_reshape], batch_size=batch_size)
+    X_batch, y_batch = tf.train.batch([data_set.train.data, data_set.train.target], batch_size=batch_size)
 
     # Model
     print('Build the model')
