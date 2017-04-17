@@ -26,7 +26,7 @@ mb_size = 32
 X_dim = data_set.train.data.shape[1]    # width * height
 y_dim = data_set.train.target.shape[1]  # width * height
 z_dim = X_dim                           # width * height
-h_dim = 1000
+h_dim = 200
 
 # model saver
 model_dir = "../../checkpoints/models_200_200_4_17"
