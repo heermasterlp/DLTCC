@@ -37,8 +37,8 @@ h_dim = 200
 
 threshold = 0.4
 
-image_width = 200
-image_height = 40
+image_width = 40
+image_height = 200
 
 # model saver
 model_dir = "../../checkpoints/models_200_200_4_17_heng"
@@ -52,7 +52,6 @@ def xavier_init(size):
 
 """ Discriminator Net model """
 X = tf.placeholder(tf.float32, shape=[None, X_dim])
-y = tf.placeholder(tf.float32, shape=[None, y_dim])
 
 D_W1 = tf.Variable(xavier_init([X_dim, h_dim]))
 D_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
@@ -153,7 +152,7 @@ def test():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(G_sample, feed_dict={Z: data_set.test.data, y: data_set.test.target})
+        prediction = sess.run(G_sample, feed_dict={Z: data_set.test.data})
 
         for it in range(prediction.shape[0]):
             y_true = data_set.test.target[it]
@@ -174,7 +173,7 @@ def test():
             acc = acc_sum / prediction.shape[1]
             print('error:{}'.format(acc))
 
-            if it == 5:
+            if it == 10:
                 show_bitmap(data_set.test.data[5], image_width, image_height)
                 show_bitmap(data_set.test.target[5], image_width, image_height)
                 show_bitmap(y_pred, image_width, image_height)
@@ -191,5 +190,5 @@ def filter(array, threshold):
 
 
 if __name__ == '__main__':
-    train()
-    # test()
+    # train()
+    test()
