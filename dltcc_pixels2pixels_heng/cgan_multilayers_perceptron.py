@@ -24,10 +24,10 @@ mb_size = 64
 Z_dim = 200*200
 X_dim = data_set.train.data.shape[1]
 y_dim = data_set.train.target.shape[1]
-h1_dim = 2000
-h2_dim = 2000
-h3_dim = 1500
-h4_dim = 2000
+h1_dim = 1000
+h2_dim = 1000
+h3_dim = 1000
+h4_dim = 1000
 
 
 def xavier_init(size):
