@@ -129,13 +129,20 @@ D_real, D_logit_real = discriminator(X, y)
 D_fake, D_logit_fake = discriminator(G_sample, y)
 
 with tf.device("gpu:0"):
-    D_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_real, labels=tf.ones_like(D_logit_real)))
-    D_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake, labels=tf.zeros_like(D_logit_fake)))
-    D_loss = D_loss_real + D_loss_fake
-    G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake, labels=tf.ones_like(D_logit_fake)))
+    # D_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_real, labels=tf.ones_like(D_logit_real)))
+    # D_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake, labels=tf.zeros_like(D_logit_fake)))
+    # D_loss = D_loss_real + D_loss_fake
+    # G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=D_logit_fake, labels=tf.ones_like(D_logit_fake)))
+    #
+    # D_solver = tf.train.AdamOptimizer().minimize(D_loss, var_list=theta_D)
+    # G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_G)
+    D_loss = tf.reduce_mean(D_real) - tf.reduce_mean(D_fake)
+    G_loss = -tf.reduce_mean(D_fake)
 
-    D_solver = tf.train.AdamOptimizer().minimize(D_loss, var_list=theta_D)
-    G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_G)
+    D_solver = (tf.train.RMSPropOptimizer(learning_rate=1e-4).minimize(-D_loss, var_list=theta_D))
+    G_solver = (tf.train.RMSPropOptimizer(learning_rate=1e-4).minimize(G_loss, var_list=theta_G))
+
+    # clip_D = [p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in theta_D]
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
