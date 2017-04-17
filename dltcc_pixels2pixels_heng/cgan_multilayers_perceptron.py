@@ -151,19 +151,19 @@ with tf.Session() as sess:
     i = 0
 
     for it in range(10000):
-        if it % 500 == 0:
-            n_sample = 16
-
-            Z_sample = sample_Z(n_sample, Z_dim)
-            y_sample = np.zeros(shape=[n_sample, y_dim])
-            y_sample[:, 7] = 1
-
-            samples = sess.run(G_sample, feed_dict={Z: Z_sample, y: y_sample})
-
-            fig = plot(samples)
-            plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
-            i += 1
-            plt.close(fig)
+        # if it % 500 == 0:
+        #     n_sample = 16
+        #
+        #     Z_sample = sample_Z(n_sample, Z_dim)
+        #     y_sample = np.zeros(shape=[n_sample, y_dim])
+        #     y_sample[:, 7] = 1
+        #
+        #     samples = sess.run(G_sample, feed_dict={Z: Z_sample, y: y_sample})
+        #
+        #     fig = plot(samples)
+        #     plt.savefig('out/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
+        #     i += 1
+        #     plt.close(fig)
 
         X_mb, y_mb = data_set.train.next_batch(mb_size)
 
