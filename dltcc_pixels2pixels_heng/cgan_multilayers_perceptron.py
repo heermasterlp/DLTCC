@@ -49,13 +49,13 @@ D_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
 D_W3 = tf.Variable(xavier_init([h2_dim, h3_dim]))
 D_b3 = tf.Variable(tf.zeros([h3_dim]))
 
-D_W4 = tf.Variable(xavier_init([h3_dim, h4_dim]))
-D_b4 = tf.Variable(tf.zeros([h4_dim]))
+# D_W4 = tf.Variable(xavier_init([h3_dim, h4_dim]))
+# D_b4 = tf.Variable(tf.zeros([h4_dim]))
 
-D_W5 = tf.Variable(xavier_init([h4_dim, 1]))
+D_W5 = tf.Variable(xavier_init([h3_dim, 1]))
 D_b5 = tf.Variable(tf.zeros(shape=[1]))
 
-theta_D = [D_W1, D_W2, D_W3, D_W4, D_W5, D_b1, D_b2, D_b3, D_b4, D_b5]
+theta_D = [D_W1, D_W2, D_W3, D_W5, D_b1, D_b2, D_b3, D_b5]
 
 
 def discriminator(x, y):
@@ -63,8 +63,8 @@ def discriminator(x, y):
     D_h1 = tf.nn.relu(tf.matmul(inputs, D_W1) + D_b1)
     D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)
     D_h3 = tf.nn.relu(tf.matmul(D_h2, D_W3) + D_b3)
-    D_h4 = tf.nn.relu(tf.matmul(D_h3, D_W4) + D_b4)
-    D_logit = tf.matmul(D_h4, D_W5) + D_b5
+    # D_h4 = tf.nn.relu(tf.matmul(D_h3, D_W4) + D_b4)
+    D_logit = tf.matmul(D_h3, D_W5) + D_b5
     D_prob = tf.nn.sigmoid(D_logit)
     return D_prob, D_logit
 
