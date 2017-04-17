@@ -43,8 +43,8 @@ y = tf.placeholder(tf.float32, shape=[None, y_dim])
 D_W1 = tf.Variable(xavier_init([X_dim + y_dim, h1_dim]))
 D_b1 = tf.Variable(tf.zeros(shape=[h1_dim]))
 
-D_W2 = tf.Variable(xavier_init([h1_dim, h2_dim]))
-D_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
+# D_W2 = tf.Variable(xavier_init([h1_dim, h2_dim]))
+# D_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
 
 # D_W3 = tf.Variable(xavier_init([h2_dim, h3_dim]))
 # D_b3 = tf.Variable(tf.zeros([h3_dim]))
@@ -52,19 +52,19 @@ D_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
 # D_W4 = tf.Variable(xavier_init([h3_dim, h4_dim]))
 # D_b4 = tf.Variable(tf.zeros([h4_dim]))
 
-D_W5 = tf.Variable(xavier_init([h2_dim, 1]))
+D_W5 = tf.Variable(xavier_init([h1_dim, 1]))
 D_b5 = tf.Variable(tf.zeros(shape=[1]))
 
-theta_D = [D_W1, D_W2, D_W5, D_b1, D_b2, D_b5]
+theta_D = [D_W1, D_W5, D_b1, D_b5]
 
 
 def discriminator(x, y):
     inputs = tf.concat(axis=1, values=[x, y])
     D_h1 = tf.nn.relu(tf.matmul(inputs, D_W1) + D_b1)
-    D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)
+    # D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)
     # D_h3 = tf.nn.relu(tf.matmul(D_h2, D_W3) + D_b3)
     # D_h4 = tf.nn.relu(tf.matmul(D_h3, D_W4) + D_b4)
-    D_logit = tf.matmul(D_h2, D_W5) + D_b5
+    D_logit = tf.matmul(D_h1, D_W5) + D_b5
     D_prob = tf.nn.sigmoid(D_logit)
     return D_prob, D_logit
 
@@ -75,8 +75,8 @@ Z = tf.placeholder(tf.float32, shape=[None, Z_dim])
 G_W1 = tf.Variable(xavier_init([Z_dim + y_dim, h1_dim]))
 G_b1 = tf.Variable(tf.zeros(shape=[h1_dim]))
 
-G_W2 = tf.Variable(xavier_init([h1_dim, h2_dim]))
-G_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
+# G_W2 = tf.Variable(xavier_init([h1_dim, h2_dim]))
+# G_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
 
 # G_W3 = tf.Variable(xavier_init([h2_dim, h3_dim]))
 # G_b3 = tf.Variable(tf.zeros(shape=[h3_dim]))
@@ -84,19 +84,19 @@ G_b2 = tf.Variable(tf.zeros(shape=[h2_dim]))
 # G_W4 = tf.Variable(xavier_init([h3_dim, h4_dim]))
 # G_b4 = tf.Variable(tf.zeros(shape=[h4_dim]))
 
-G_W5 = tf.Variable(xavier_init([h2_dim, X_dim]))
+G_W5 = tf.Variable(xavier_init([h1_dim, X_dim]))
 G_b5 = tf.Variable(tf.zeros(shape=[X_dim]))
 
-theta_G = [G_W1, G_W2, G_W5, G_b1, G_b2, G_b5]
+theta_G = [G_W1, G_W5, G_b1, G_b5]
 
 
 def generator(z, y):
     inputs = tf.concat(axis=1, values=[z, y])
     G_h1 = tf.nn.relu(tf.matmul(inputs, G_W1) + G_b1)
-    G_h2 = tf.nn.relu(tf.matmul(G_h1, G_W2) + G_b2)
+    # G_h2 = tf.nn.relu(tf.matmul(G_h1, G_W2) + G_b2)
     # G_h3 = tf.nn.relu(tf.matmul(G_h2, G_W3) + G_b3)
     # G_h4 = tf.nn.relu(tf.matmul(G_h3, G_W4) + G_b4)
-    G_log_prob = tf.matmul(G_h2, G_W5) + G_b5
+    G_log_prob = tf.matmul(G_h1, G_W5) + G_b5
     G_prob = tf.nn.sigmoid(G_log_prob)
 
     return G_prob
