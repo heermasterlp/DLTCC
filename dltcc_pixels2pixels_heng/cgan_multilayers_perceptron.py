@@ -1,6 +1,4 @@
-
 import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -173,7 +171,7 @@ with tf.Session() as sess:
         _, D_loss_curr = sess.run([D_solver, D_loss], feed_dict={X: X_mb, Z: Z_sample, y: y_mb})
         _, G_loss_curr = sess.run([G_solver, G_loss], feed_dict={Z: Z_sample, y: y_mb})
 
-        if it % 500 == 0:
+        if it % 50 == 0:
             print('Iter: {}'.format(it))
             print('D loss: {:.4}'. format(D_loss_curr))
             print('G_loss: {:.4}'.format(G_loss_curr))
