@@ -1,3 +1,4 @@
+import argparse
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,6 +8,8 @@ from ImageDisplay import *
 from input_data import *
 import datetime
 
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('--epoch', dest='epoch', type=int, default=1000, help='# of epoch')
 
 # 200x200 data set
 # train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_200_200_200_train.npy"
@@ -128,8 +131,10 @@ D_fake = discriminator(G_sample)
 
 clip_D = [p.assign(tf.clip_by_value(p, -0.01, 0.01)) for p in theta_D]
 
+args = parser.parse_args()
 
-def train():
+
+def train(args):
 
     with tf.device("gpu:0"):
         D_loss = tf.reduce_mean(D_real) - tf.reduce_mean(D_fake)
@@ -154,7 +159,7 @@ def train():
 
         i = 0
 
-        for it in range(1000):
+        for it in range(args.epoch):
 
             for _ in range(5):
                 X_mb, _ = data_set.train.next_batch(mb_size)
@@ -222,6 +227,9 @@ def filter(ay, threshold):
     return np.array(result)
 
 
+def main(_):
+    train(args)
+    # test()
+
 if __name__ == '__main__':
-    # train()
-    test()
+    tf.app.run()
