@@ -37,42 +37,74 @@ def xavier_init(size):
 
 
 X_dim = IMG_HEIGHT*IMG_WIDTH
-h_dim = 200
+d_h1_dim = 1000
+d_h2_dim = 1000
+d_h3_dim = 1000
+d_h4_dim = 1000
+
+g_h1_dim = 1000
+g_h2_dim = 1000
+g_h3_dim = 1000
+g_h4_dim = 1000
 z_dim = X_dim
 
 """ Discriminator Net model """
 X = tf.placeholder(tf.float32, shape=[None, X_dim])
 
+D_W1 = tf.Variable(xavier_init([X_dim, d_h1_dim]))
+D_b1 = tf.Variable(tf.zeros(shape=[d_h1_dim]))
 
-D_W1 = tf.Variable(xavier_init([X_dim, h_dim]))
-D_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
+D_W2 = tf.Variable(xavier_init([d_h1_dim, d_h2_dim]))
+D_b2 = tf.Variable(tf.zeros(shape=[d_h2_dim]))
 
-D_W2 = tf.Variable(xavier_init([h_dim, 1]))
-D_b2 = tf.Variable(tf.zeros(shape=[1]))
+D_W3 = tf.Variable(xavier_init([d_h2_dim, d_h3_dim]))
+D_b3 = tf.Variable(tf.zeros(shape=[d_h3_dim]))
 
-theta_D = [D_W1, D_W2, D_b1, D_b2]
+D_W4 = tf.Variable(xavier_init([d_h3_dim, d_h4_dim]))
+D_b4 = tf.Variable(tf.zeros(shape=[d_h4_dim]))
+
+D_W5 = tf.Variable(xavier_init([d_h4_dim, 1]))
+D_b5 = tf.Variable(tf.zeros(shape=[1]))
+
+theta_D = [D_W1, D_W2,D_W3, D_W4, D_W5, D_b1, D_b2, D_b3, D_b4, D_b5]
 
 """ Generator Net model """
 Z = tf.placeholder(tf.float32, shape=[None, z_dim])
 
-G_W1 = tf.Variable(xavier_init([z_dim, h_dim]))
-G_b1 = tf.Variable(tf.zeros(shape=[h_dim]))
+G_W1 = tf.Variable(xavier_init([z_dim, g_h1_dim]))
+G_b1 = tf.Variable(tf.zeros(shape=[g_h1_dim]))
 
-G_W2 = tf.Variable(xavier_init([h_dim, X_dim]))
-G_b2 = tf.Variable(tf.zeros(shape=[X_dim]))
+G_W2 = tf.Variable(xavier_init([g_h1_dim, g_h2_dim]))
+G_b2 = tf.Variable(tf.zeros(shape=[g_h2_dim]))
 
-theta_G = [G_W1, G_W2, G_b1, G_b2]
+G_W3 = tf.Variable(xavier_init([g_h2_dim, g_h3_dim]))
+G_b3 = tf.Variable(tf.zeros(shape=[g_h3_dim]))
+
+G_W4 = tf.Variable(xavier_init([g_h3_dim, g_h4_dim]))
+G_b4 = tf.Variable(tf.zeros(shape=[g_h4_dim]))
+
+G_W5 = tf.Variable(xavier_init([g_h4_dim, X_dim]))
+G_b5 = tf.Variable(tf.zeros(shape=[X_dim]))
+
+theta_G = [G_W1, G_W2, G_W3, G_W4, G_W5, G_b1, G_b2, G_b3, G_b4, G_b5]
 
 
 def discriminator(x):
     D_h1 = tf.nn.relu(tf.matmul(x, D_W1) + D_b1)
-    out = tf.matmul(D_h1, D_W2) + D_b2
+    D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)
+    D_h3 = tf.nn.relu(tf.matmul(D_h2, D_W3) + D_b3)
+    D_h4 = tf.nn.relu(tf.matmul(D_h3, D_W4) + D_b4)
+    out = tf.matmul(D_h4, D_W5) + D_b5
     return out
 
 
 def generator(z):
     G_h1 = tf.nn.relu(tf.matmul(z, G_W1) + G_b1)
-    G_log_prob = tf.matmul(G_h1, G_W2) + G_b2
+    G_h2 = tf.nn.relu(tf.matmul(G_h1, G_W2) + G_b2)
+    G_h3 = tf.nn.relu(tf.matmul(G_h2, G_W3) + G_b3)
+    G_h4 = tf.nn.relu(tf.matmul(G_h3, G_W4) + G_b4)
+
+    G_log_prob = tf.matmul(G_h4, G_W5) + G_b5
     G_prob = tf.nn.sigmoid(G_log_prob)
     return G_prob
 
