@@ -291,7 +291,14 @@ def predict(canvas, canvas_compare):
 
     pred_arr = np.array(prediction)
 
-    predict_array = filter(pred_arr, THEROSHOLD)
+    img_pred = []
+    for index in range(pred_arr.shape[1]):
+        if pred_arr[0][index] >= THEROSHOLD:
+            img_pred.append(1)
+        else:
+            img_pred.append(0)
+
+    predict_array = np.array(img_pred)
 
     predict_reshape = predict_array.reshape((input_bitmap.shape[0], input_bitmap.shape[1]))
     predict_image = Image.fromarray(np.uint8(predict_reshape) * 255)
@@ -318,10 +325,10 @@ def predict(canvas, canvas_compare):
     canvas_compare.create_image(pred_h, pred_w, image=compare_TK_img)
 
 
-def filter(array, threshold):
+def filter(ay, threshold):
     result = []
-    for it in range(array.shape[0]):
-        if array[it] >= threshold:
+    for it in range(ay.shape[0]):
+        if ay[it] >= threshold:
             result.append(1)
         else:
             result.append(0)
