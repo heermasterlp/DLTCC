@@ -6,12 +6,14 @@ import os
     Generate the ImageDisplay SourceImages of Kai script and Qigong script and save to gray scale images.
 '''
 
-ORIANGL_HEIGHT = 50
-ORIANGL_WIDTH = 50
-CHARACTER_SIZE = 50
+ORIANGL_HEIGHT = 128
+ORIANGL_WIDTH = 128
+CHARACTER_SIZE = 128
 
 # Characters dictionary of Chinese.
 CHARACTER_DICT_FILE = "../character_dict/chinese_characters.txt"
+Chars_train_dict = "../character_dict/char_train.txt"
+Chars_test_dict = "../character_dict/char_test.txt"
 
 # Fonts Files
 KAI_FONTS_DICT = "../ttf_files/fangzhengkaisc.TTF"
@@ -21,6 +23,11 @@ QIDONG_FONTS_DICT = "../ttf_files/qigongscfont.TTF"
 KAI_IMAGE_FILES = "../../DataSet/SourceImages/Kai_Images_50_50/"
 QIDONG_IMAGE_FILES = "../../DataSet/SourceImages/Qigong_Images_50_50/"
 
+Kai_128_128_200_train = "../../DataSet/SourceImages/kai_128_128_200_train/"
+Kai_128_128_20_test = "../../DataSet/SourceImages/kai_128_128_20_test/"
+Qigong_128_128_200_train = "../../DataSet/SourceImages/Qigong_128_128_200_train/"
+Qigong_128_128_20_test = "../../DataSet/SourceImages/Qigong_128_128_20_test/"
+
 
 class DataSetGenerate:
 
@@ -28,7 +35,7 @@ class DataSetGenerate:
         pass
 
     @staticmethod
-    def generate(font_files, image_files):
+    def generate(font_files, image_files, char_dict_files):
         index = 0
         if font_files is None or image_files is None:
             print("The font files and image files should not None!")
@@ -36,7 +43,7 @@ class DataSetGenerate:
             os.mkdir(image_files)
 
         # Generate images based on the font dict and characters dict.
-        with open(CHARACTER_DICT_FILE, mode="r") as input_files:
+        with open(char_dict_files, mode="r") as input_files:
             contents = input_files.readlines()
 
             # font file
@@ -83,7 +90,11 @@ class DataSetGenerate:
 
 
 def test():
-    DataSetGenerate.generate(KAI_FONTS_DICT, KAI_IMAGE_FILES)
+    print('Generate')
+    DataSetGenerate.generate(KAI_FONTS_DICT, Kai_128_128_200_train, Chars_train_dict)
+    DataSetGenerate.generate(KAI_FONTS_DICT, Kai_128_128_20_test, Chars_test_dict)
+    DataSetGenerate.generate(QIDONG_FONTS_DICT, Qigong_128_128_200_train, Chars_train_dict)
+    DataSetGenerate.generate(QIDONG_FONTS_DICT, Qigong_128_128_20_test, Chars_test_dict)
 
 
 # generate font: kai
@@ -96,11 +107,7 @@ def generate_qigong():
     DataSetGenerate.generate(QIDONG_FONTS_DICT, QIDONG_IMAGE_FILES)
 
 if __name__ == "__main__":
-    # test()
+    test()
 
-    # generate kai
-    # generate_kai()
 
-    # generate qi gong
-    generate_qigong()
 
