@@ -30,6 +30,7 @@ target_dir = None
 
 predict_result = None
 
+
 def xavier_init(size):
     in_dim = size[0]
     xavier_stddev = 1. / tf.sqrt(in_dim / 2.)

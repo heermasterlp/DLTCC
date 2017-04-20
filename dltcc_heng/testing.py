@@ -44,8 +44,7 @@ def test():
 
     # place variable
     x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = data_set.test.target
-    phase_train = tf.placeholder(tf.bool, name='phase_train')
+    y_true = data_set.train.target
 
     # Build models
     y_pred = net_2_hidden.net(x, IMAGE_WIDTH, IMAGE_HEIGHT)
@@ -64,7 +63,7 @@ def test():
             print("The checkpoint models not found!")
 
         # prediction shape: [batch_size, width * height]
-        prediction = sess.run(y_pred, feed_dict={x: data_set.test.data, phase_train: False})
+        prediction = sess.run(y_pred, feed_dict={x: data_set.train.data})
 
         if prediction is None:
             print("Prediction is none")
@@ -84,7 +83,8 @@ def test():
 
             minPredVal = np.amin(pred_arr)
             maxPredVal = np.amax(pred_arr)
-            prediction_normed = utils._normalize_func(pred_arr, minVal=minPredVal, maxVal=maxPredVal)
+            # prediction_normed = utils._normalize_func(pred_arr, minVal=minPredVal, maxVal=maxPredVal)
+            prediction_normed = pred_arr
 
             y_pred = []
             for y in range(prediction_normed.shape[0]):
@@ -96,12 +96,15 @@ def test():
             y_pred = np.array(y_pred)
             y_true = np.array(data_set.train.target[x])
 
-            sub_array = np.abs(np.subtract(y_pred, y_true))
             sum = 0.0
-            for i in range(len(sub_array)):
-                sum += sub_array[i]
-            accuracy += sum / len(sub_array)
-            print("accuracy:{}".format(1 - sum / len(sub_array)))
+            assert y_pred.shape == y_true.shape
+
+            for i in range(y_pred.shape[0]):
+                if y_pred[i] == 1.0 and y_true[i] != 1.0:
+                    sum += 1
+            accuracy = 1 - sum / y_pred.shape[0]
+
+            print("accuracy:{}".format(accuracy))
 
         avg_accuracy = 1 - accuracy / prediction.shape[0]
 

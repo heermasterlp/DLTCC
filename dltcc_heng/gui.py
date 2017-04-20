@@ -12,13 +12,14 @@ from matplotlib.figure import Figure
 import tensorflow as tf
 import os
 
-import models
+import input_data
+import net_2_hidden
 from utils import _normalize_func
 
-IMG_WIDTH = 200
-IMG_HEIGHT = 40
+IMAGE_WIDTH = 200
+IMAGE_HEIGHT = 40
 
-model_path = "../../checkpoints/models_200_40_mac_4_1"
+model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40"
 
 #threshold
@@ -34,12 +35,10 @@ target_dir = None
 predict_result = None
 
 # place variable
-x = tf.placeholder(tf.float32, shape=[None, IMG_WIDTH * IMG_HEIGHT], name="x")
-phase_train = tf.placeholder(tf.bool, name='phase_train')
+x = tf.placeholder(tf.float32, shape=[None, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
 
 # Build models
-dltcc_obj = models.DltccHeng()
-dltcc_obj.build(x, phase_train, IMG_WIDTH, IMG_HEIGHT)
+y_pred = net_2_hidden.net(x, IMAGE_WIDTH, IMAGE_HEIGHT)
 
 # Saver
 saver = tf.train.Saver()
@@ -55,7 +54,7 @@ else:
     print("The checkpoint models not found!")
 
 root = tk.Tk()
-root.geometry('900x800')
+root.geometry('600x400')
 root.title('DL2TCC')
 
 img_TK_Input = None
@@ -238,7 +237,7 @@ def predict(canvas, canvas_compare):
         print("Input should not none!")
 
     # prediction shape: [batch_size, width * height]
-    prediction = sess.run(dltcc_obj.y_prob, feed_dict={x: input_array, phase_train: False})
+    prediction = sess.run(y_pred, feed_dict={x: input_array})
 
     if prediction is None:
         return
@@ -270,9 +269,13 @@ def predict(canvas, canvas_compare):
     # calculate accuracy
     img_true_array = np.array(img_True.convert("1"))
     img_true_array = np.reshape(img_true_array, 8000)
-    diff = np.abs(np.subtract(img_true_array, predict_array))
-    sum = np.sum(diff)
-    accuracy = 1 - sum / 8000
+
+    sum = 0.0
+    for i in range(predict_array.shape[0]):
+        if predict_array[i] == 1.0 and img_true_array[i] != 1.0:
+            sum += 1
+    accuracy = 1 - sum / predict_array.shape[0]
+
     var_accuracy.set(accuracy)
     img_true_array = np.reshape(img_true_array, (40, 200))
 

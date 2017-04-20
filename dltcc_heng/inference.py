@@ -32,7 +32,7 @@ model_path = "../../checkpoints/models_200_40_mac_4_8"
 checkpoint_path = "../../checkpoints/checkpoints_200_40_mac"
 
 # threshold
-THEROSHOLD = 0.6
+THEROSHOLD = 0.8
 
 
 def inference(input):
