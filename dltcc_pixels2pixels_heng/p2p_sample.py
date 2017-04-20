@@ -17,23 +17,27 @@ import input_data
 
 EPS = 1e-12
 CROP_SIZE = 256
-ngf = 64
-ndf = 64
+ngf = 8
+ndf = 8
 gan_weight = 1.0
 l1_weight = 100.0
 
 batch_size = 64
+image_width = 128
+image_height = 128
+image_size = image_width * image_height
 
 Examples = collections.namedtuple("Examples", "paths, inputs, targets, count, steps_per_epoch")
-Model = collections.namedtuple("Model", "outputs, predict_real, predict_fake, discrim_loss, discrim_grads_and_vars, gen_loss_GAN, gen_loss_L1, gen_grads_and_vars, train")
+Model = collections.namedtuple("Model", "outputs, predict_real, predict_fake, discrim_loss, "
+                                        "discrim_grads_and_vars, gen_loss_GAN, gen_loss_L1, gen_grads_and_vars, train")
 
 
-# 200x200 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_200_200_200_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_200_200_200_train.npy"
+# 128x128 data set
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/kai_128_128_200_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_128_128_200_train.npy"
 
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_200_200_20_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_200_200_20_test.npy"
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/kai_128_128_20_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_128_128_20_test.npy"
 
 # train data set files
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
@@ -116,17 +120,17 @@ def create_generator(generator_inputs, generator_outputs_channels):
 
     # encoder_1: [batch, 256, 256, in_channels] => [batch, 128, 128, ngf]
     with tf.variable_scope("encoder_1"):
+        print('input shape:{}'.format(generator_inputs.shape))
         output = conv(generator_inputs, ngf, stride=2)
         layers.append(output)
 
     layer_specs = [
-        ngf * 2, # encoder_2: [batch, 128, 128, ngf] => [batch, 64, 64, ngf * 2]
-        ngf * 4, # encoder_3: [batch, 64, 64, ngf * 2] => [batch, 32, 32, ngf * 4]
-        ngf * 8, # encoder_4: [batch, 32, 32, ngf * 4] => [batch, 16, 16, ngf * 8]
-        ngf * 8, # encoder_5: [batch, 16, 16, ngf * 8] => [batch, 8, 8, ngf * 8]
-        ngf * 8, # encoder_6: [batch, 8, 8, ngf * 8] => [batch, 4, 4, ngf * 8]
-        ngf * 8, # encoder_7: [batch, 4, 4, ngf * 8] => [batch, 2, 2, ngf * 8]
-        ngf * 8, # encoder_8: [batch, 2, 2, ngf * 8] => [batch, 1, 1, ngf * 8]
+        ngf * 4,  # encoder_2: [batch, 64, 64, ngf * 2] => [batch, 32, 32, ngf * 4]
+        ngf * 8,  # encoder_3: [batch, 32, 32, ngf * 4] => [batch, 16, 16, ngf * 8]
+        ngf * 8,  # encoder_4: [batch, 16, 16, ngf * 8] => [batch, 8, 8, ngf * 8]
+        ngf * 8,  # encoder_5: [batch, 8, 8, ngf * 8] => [batch, 4, 4, ngf * 8]
+        ngf * 8,  # encoder_6: [batch, 4, 4, ngf * 8] => [batch, 2, 2, ngf * 8]
+        ngf * 8,  # encoder_7: [batch, 2, 2, ngf * 8] => [batch, 1, 1, ngf * 8]
     ]
 
     for out_channels in layer_specs:
@@ -136,16 +140,15 @@ def create_generator(generator_inputs, generator_outputs_channels):
             convolved = conv(rectified, out_channels, stride=2)
             output = batchnorm(convolved)
             layers.append(output)
-    print(layers[-1].get_shape())
+    print("last encode layer shape:{}".format(layers[-1].get_shape()))
 
     layer_specs = [
-        (ngf * 8, 0.5),   # decoder_8: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
-        (ngf * 8, 0.5),   # decoder_7: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
-        (ngf * 8, 0.5),   # decoder_6: [batch, 4, 4, ngf * 8 * 2] => [batch, 8, 8, ngf * 8 * 2]
-        (ngf * 8, 0.0),   # decoder_5: [batch, 8, 8, ngf * 8 * 2] => [batch, 16, 16, ngf * 8 * 2]
-        (ngf * 4, 0.0),   # decoder_4: [batch, 16, 16, ngf * 8 * 2] => [batch, 32, 32, ngf * 4 * 2]
-        (ngf * 2, 0.0),   # decoder_3: [batch, 32, 32, ngf * 4 * 2] => [batch, 64, 64, ngf * 2 * 2]
-        (ngf, 0.0),       # decoder_2: [batch, 64, 64, ngf * 2 * 2] => [batch, 128, 128, ngf * 2]
+        (ngf * 8, 0.5),   # decoder_7: [batch, 1, 1, ngf * 8] => [batch, 2, 2, ngf * 8 * 2]
+        (ngf * 8, 0.5),   # decoder_6: [batch, 2, 2, ngf * 8 * 2] => [batch, 4, 4, ngf * 8 * 2]
+        (ngf * 8, 0.5),   # decoder_5: [batch, 4, 4, ngf * 8 * 2] => [batch, 8, 8, ngf * 8 * 2]
+        (ngf * 8, 0.0),   # decoder_4: [batch, 8, 8, ngf * 8 * 2] => [batch, 16, 16, ngf * 8 * 2]
+        (ngf * 4, 0.0),   # decoder_3: [batch, 16, 16, ngf * 8 * 2] => [batch, 32, 32, ngf * 4 * 2]
+        (ngf * 2, 0.0)   # decoder_2: [batch, 32, 32, ngf * 4 * 2] => [batch, 64, 64, ngf * 2 * 2]
     ]
 
     num_encoder_layers = len(layers)
@@ -250,17 +253,15 @@ def train():
         print("data set test target shape:{}".format(data_set.test.target.shape))
 
     # input placeholder
-    X = tf.placeholder(tf.float32, shape=[None, 200 * 200])
-    y = tf.placeholder(tf.float32, shape=[None, 200 * 200])
+    X = tf.placeholder(tf.float32, shape=[batch_size, image_width * image_height])
+    y = tf.placeholder(tf.float32, shape=[batch_size, image_width * image_height])
 
-    X_reshape = tf.reshape(X, [-1, 200, 200, 1])
-    y_reshape = tf.reshape(y, [-1, 200, 200, 1])
-
-    X_batch, y_batch = tf.train.batch([data_set.train.data, data_set.train.target], batch_size=batch_size)
+    X_reshape = tf.reshape(X, [batch_size, image_width, image_height, 1])
+    y_reshape = tf.reshape(y, [batch_size, image_width, image_height, 1])
 
     # Model
     print('Build the model')
-    outputs, predict_real, predict_fake = create_model(X_batch, y_batch)
+    outputs, predict_real, predict_fake = create_model(X_reshape, y_reshape)
     print('Build the model end!')
 
     with tf.name_scope("discriminator_loss"):
@@ -284,17 +285,16 @@ def train():
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        for i in range(100):
+        for epoch in range(1000):
 
-            X_batch= data_set.train.data.next_batch(64)
-            y_batch = data_set.train.target.next_batch(64)
+            x_batch, y_batch = data_set.train.next_batch(batch_size)
 
-            D_loss = sess.run(discrim_op, feed_dict={X: X_batch, y: y_batch})
-            G_loss = sess.run(gen_op, feed_dict={X: X_batch, y: y_batch})
+            for it in range(10):
+                _, D_loss = sess.run([discrim_op, discrim_loss], feed_dict={X: x_batch, y: y_batch})
+            _, G_loss = sess.run([gen_op, gen_loss], feed_dict={X: x_batch, y: y_batch})
 
-            if i % 50 == 0:
-                print('D_loss: {}'.format(D_loss))
-                print('G_loss:{}'.format(G_loss))
+            if epoch % 50 == 0:
+                print('epoch:{} D_loss:{} G_loss:{}'.format(epoch, D_loss, G_loss))
 
 
 train()
