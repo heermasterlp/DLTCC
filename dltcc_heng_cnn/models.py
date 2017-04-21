@@ -19,16 +19,19 @@ class DltccHeng(object):
             # conv_1: [batch, 200, 4, 1] => [batch, 100, 20, ngf]
             self.conv1 = conv2d(self.x_reshape, self.ngf, stride=2, name="conv1")
             self.rectified1 = lrelu(self.conv1, 0.2, name="rectified1")
+            self.max_pool1 = tf.nn.max_pool(self.rectified1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1])
 
             # [batch, 100, 20, ngf] => [batch, 50, 10, ngf*2]
-            self.conv2 = conv2d(self.rectified1, self.ngf * 2, stride=2, name="conv2")
+            self.conv2 = conv2d(self.max_pool1, self.ngf * 2, stride=2, name="conv2")
             self.batchnorm2 = batchnorm(self.conv2, name="batchnorm2")
             self.rectified2 = lrelu(self.batchnorm2, 0.2, name="rectified2")
+            self.max_pool2 = tf.nn.max_pool(self.rectified2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1])
 
             # [batch, 50, 10, ngf*2] => [batch, 25, 5, ngf*4]
             self.conv3 = conv2d(self.rectified2, self.ngf * 4, stride=2, name="conv3")
             self.batchnorm3 = batchnorm(self.conv3, name="batchnorm3")
             self.rectified3 = lrelu(self.batchnorm3, 0.2, name="rectified3")
+            self.max_pool3 = tf.nn.max_pool(self.rectified3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1])
 
         with tf.variable_scope("deconv_layers"):
             # [batch, 25, 5, ngf*4] => [batch, 50, 10, ngf*2]
@@ -54,7 +57,7 @@ def conv2d(batch_input, out_channels, stride, name):
                                      initializer=tf.random_normal_initializer(0, 0.02))
         # [batch, in_height, in_width, in_channels], [filter_width, filter_height, in_channels, out_channels]
         #     => [batch, out_height, out_width, out_channels]
-        conv = tf.nn.conv2d(batch_input, filter, strides=[1, stride, stride, 1])
+        conv = tf.nn.conv2d(batch_input, filter, strides=[1, stride, stride, 1], padding="SAME")
         return conv
 
 
