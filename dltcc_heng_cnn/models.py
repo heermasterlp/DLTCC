@@ -19,35 +19,48 @@ class DltccHeng(object):
             # conv_1: [batch, 200, 4, 1] => [batch, 100, 20, ngf]
             self.conv1_1 = conv2d(self.x_reshape, self.ngf*2, stride=1, name="conv1_1")
             self.conv1_2 = conv2d(self.conv1_1, self.ngf*2, stride=1, name="conv1_2")
-            self.max_pool1 = maxpool2d(self.conv1_2, k=2)
+            self.batchnorm1 = batchnorm(self.conv1_2, name="batchnorm1")
+            self.max_pool1 = maxpool2d(self.batchnorm1, k=2)
 
-            # [batch, 100, 20, ngf] => [batch, 50, 10, ngf*2]
+            # [batch, 100, 20, ngf*2] => [batch, 50, 10, ngf*4]
             self.conv2_1 = conv2d(self.max_pool1, self.ngf * 4, stride=1, name="conv2_1")
             self.conv2_2 = conv2d(self.conv2_1, self.ngf * 4, stride=1, name="conv2_2")
             self.conv2_3 = conv2d(self.conv2_2, self.ngf * 4, stride=1, name="conv2_3")
             self.conv2_4 = conv2d(self.conv2_3, self.ngf * 4, stride=1, name="conv2_4")
-            self.max_pool2 = maxpool2d(self.conv2_4, k=2)
+            self.batchnorm2 = batchnorm(self.conv2_4, name="batchnorm2")
+            self.max_pool2 = maxpool2d(self.batchnorm2, k=2)
 
-            # [batch, 50, 10, ngf*2] => [batch, 25, 5, ngf*4]
+            # [batch, 50, 10, ngf*4] => [batch, 25, 5, ngf*8]
             self.conv3_1 = conv2d(self.max_pool2, self.ngf * 8, stride=1, name="conv3_1")
             self.conv3_2 = conv2d(self.conv3_1, self.ngf * 8, stride=1, name="conv3_2")
             self.conv3_3 = conv2d(self.conv3_2, self.ngf * 8, stride=1, name="conv3_3")
             self.conv3_4 = conv2d(self.conv3_3, self.ngf * 8, stride=1, name="conv3_4")
-            self.max_pool3 = maxpool2d(self.conv3_4, k=2)
+            self.batchnorm3 = batchnorm(self.conv3_4, name="batchnorm3")
+            self.max_pool3 = maxpool2d(self.batchnorm3, k=2)
+
+            # [batch, 25, 5, ngf * 8]  => [batch, 25, 5, ngf * 8]
+            self.conv4_1 = conv2d(self.max_pool3, self.ngf*8, stride=1, name="conv4_1")
+            self.conv4_2 = conv2d(self.conv4_1, self.ngf*8, stride=1, name="conv4_2")
+            self.conv4_3 = conv2d(self.conv4_2, self.ngf*8, stride=1, name="conv4_3")
+            self.conv4_4 = conv2d(self.conv4_3, self.ngf*8, stride=1, name="conv4_4")
+            self.conv4_5 = conv2d(self.conv4_4, self.ngf*8, stride=1, name="conv4_5")
+            self.conv4_6 = conv2d(self.conv4_5, self.ngf*8, stride=1, name="conv4_6")
+            self.conv4_7 = conv2d(self.conv4_6, self.ngf*8, stride=1, name="conv4_7")
+            self.conv4_8 = conv2d(self.conv4_7, self.ngf*8, stride=1, name="conv4_8")
 
         with tf.variable_scope("deconv_layers"):
             # [batch, 25, 5, ngf*4] => [batch, 50, 10, ngf*2]
-            self.deconv3 = deconv(self.max_pool3, self.ngf*2, name="deconv3")
+            self.deconv3 = deconv2d(self.conv4_8, self.ngf * 2, name="deconv3")
             self.de_batchnorm3 = batchnorm(self.deconv3, name="de_batchnorm3")
             self.de_rectified3 = tf.nn.relu(self.de_batchnorm3, name="de_rectified3")
 
             # [batch, 50, 10, ngf*2] => [batch, 100, 20, ngf]
-            self.deconv2 = deconv(self.de_rectified3, self.ngf, name="deconv2")
+            self.deconv2 = deconv2d(self.de_rectified3, self.ngf, name="deconv2")
             self.de_batchnorm2 = batchnorm(self.deconv2, name="de_batchnorm2")
             self.de_rectified2 = tf.nn.relu(self.de_batchnorm2, name="de_rectified2")
 
             # [batch, 100, 20, ngf] => [batch, 200, 40, 1]
-            self.deconv1 = deconv(self.de_rectified2, out_channels=1, name="deconv1")
+            self.deconv1 = deconv2d(self.de_rectified2, out_channels=1, name="deconv1")
             self.de_batchnorm1 = batchnorm(self.deconv1, name="de_batchnorm1")
             self.out = tf.tanh(self.de_batchnorm1, name="out")
 
@@ -96,7 +109,7 @@ def batchnorm(input, name):
         return normalized
 
 
-def deconv(batch_input, out_channels, name):
+def deconv2d(batch_input, out_channels, name):
     with tf.variable_scope(name):
         batch, in_height, in_width, in_channels = [int(d) for d in batch_input.get_shape()]
         filter = tf.get_variable("filter", [3, 3, out_channels, in_channels], dtype=tf.float32,
@@ -106,3 +119,5 @@ def deconv(batch_input, out_channels, name):
         conv = tf.nn.conv2d_transpose(batch_input, filter, [batch, in_height * 2, in_width * 2, out_channels],
                                           [1, 2, 2, 1], padding="SAME")
         return conv
+
+
