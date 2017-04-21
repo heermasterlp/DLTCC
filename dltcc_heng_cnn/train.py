@@ -32,11 +32,11 @@ IMAGE_HEIGHT = 40
 ngf = 16
 batch_size = 28
 
-model_dir = "../../checkpoints/models_200_40_mac_4_8"
+model_dir = "../../checkpoints/models_200_40_mac_4_21"
 
 # max training epoch
 MAX_TRAIN_EPOCH = 1000
-DISPLAY_STEP = 10
+DISPLAY_STEP = 1000
 
 
 def train():
@@ -86,7 +86,7 @@ def train():
         sess.run(init_op)
 
         # Train the models
-        for epoch in range(MAX_TRAIN_EPOCH):
+        for epoch in range(args.epoch):
             x_batch, y_batch = (data_set.train.data, data_set.train.target)
             _, loss = sess.run([optimizer_op, loss_op], feed_dict={x: x_batch, y_true: y_batch})
 
