@@ -58,6 +58,9 @@ def train():
     y_true = tf.placeholder(tf.float32, shape=[batch_size, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
 
     # Models
+    is_training = False
+    if args.mode == "train":
+        is_training = True
     models = DltccHeng(ngf, IMAGE_WIDTH, IMAGE_HEIGHT)
     models.build(x)
     print("Build models end!")
