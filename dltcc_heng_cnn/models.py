@@ -62,7 +62,7 @@ class DltccHeng(object):
             # [batch, 100, 20, ngf] => [batch, 200, 40, 1]
             self.deconv1 = deconv2d(self.de_rectified2, out_channels=1, name="deconv1")
             self.de_batchnorm1 = batchnorm(self.deconv1, name="de_batchnorm1")
-            self.out = tf.tanh(self.de_batchnorm1, name="out")
+            self.out = tf.sigmoid(self.de_batchnorm1, name="out")
 
 
 def conv2d(batch_input, out_channels, stride, name):

@@ -26,11 +26,10 @@ IMAGE_HEIGHT = 40
 ngf = 16
 batch_size = 11
 
-model_dir = "../../checkpoints/models_200_40_mac_4_8"
+model_dir = "../../checkpoints/models_200_40_mac_4_21"
 
 # Threshold
 threshold = 0.6
-
 
 def test():
     # Data set
@@ -72,7 +71,33 @@ def test():
         assert y_pred.shape == y_true.shape
         print("y_pred shape:{} y_true shape:{}".format(y_pred.shape, y_true.shape))
 
+        # threshold
+        y_pred_arr = np.array(y_pred)
+        y_true_arr = np.array(y_true)
+
+        y_pred_list =[]
+        for bt in range(y_pred.shape[0]):
+            y_pred_item_list = []
+            print(y_pred[bt])
+            print(np.amax(y_pred[bt]))
+            print(np.amin(y_pred[bt]))
+            for it in range(y_pred.shape[1]):
+
+                if y_pred[bt][it] >= threshold:
+                    y_pred_item_list.append(1)
+                else:
+                    y_pred_item_list.append(0)
+
+            y_pred_list.append(y_pred_item_list)
+
+
         # Calculate the accuracy
+        # for bt in range(y_pred.shape[0]):
+        #     y_pred_item = y_pred[bt]
+        #     y_true_item = y_true[bt]
+        #     for it in range(y_pred.shape[1]):
+        #         pass
+
 
 
 if __name__ == "__main__":

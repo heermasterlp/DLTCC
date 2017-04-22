@@ -22,7 +22,7 @@ train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_heng_200_40_30_tr
 test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_heng_200_40_11_test.npy"
 test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_heng_200_40_11_test.npy"
 
-# train data set files
+# train data set files---
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
