@@ -19,24 +19,24 @@ class DltccHeng(object):
             # conv_1: [batch, 200, 4, 1] => [batch, 100, 20, ngf]
             self.conv1_1 = conv2d(self.x_reshape, self.ngf*2, stride=1, name="conv1_1")
             self.conv1_2 = conv2d(self.conv1_1, self.ngf*2, stride=1, name="conv1_2")
-            self.batchnorm1 = batchnorm(self.conv1_2, name="batchnorm1")
-            self.max_pool1 = maxpool2d(self.batchnorm1, k=2)
+            # self.batchnorm1 = batchnorm(self.conv1_2, name="batchnorm1")
+            self.max_pool1 = maxpool2d(self.conv1_2, k=2)
 
             # [batch, 100, 20, ngf*2] => [batch, 50, 10, ngf*4]
             self.conv2_1 = conv2d(self.max_pool1, self.ngf * 4, stride=1, name="conv2_1")
             self.conv2_2 = conv2d(self.conv2_1, self.ngf * 4, stride=1, name="conv2_2")
             self.conv2_3 = conv2d(self.conv2_2, self.ngf * 4, stride=1, name="conv2_3")
             self.conv2_4 = conv2d(self.conv2_3, self.ngf * 4, stride=1, name="conv2_4")
-            self.batchnorm2 = batchnorm(self.conv2_4, name="batchnorm2")
-            self.max_pool2 = maxpool2d(self.batchnorm2, k=2)
+            # self.batchnorm2 = batchnorm(self.conv2_4, name="batchnorm2")
+            self.max_pool2 = maxpool2d(self.conv2_4, k=2)
 
             # [batch, 50, 10, ngf*4] => [batch, 25, 5, ngf*8]
             self.conv3_1 = conv2d(self.max_pool2, self.ngf * 8, stride=1, name="conv3_1")
             self.conv3_2 = conv2d(self.conv3_1, self.ngf * 8, stride=1, name="conv3_2")
             self.conv3_3 = conv2d(self.conv3_2, self.ngf * 8, stride=1, name="conv3_3")
             self.conv3_4 = conv2d(self.conv3_3, self.ngf * 8, stride=1, name="conv3_4")
-            self.batchnorm3 = batchnorm(self.conv3_4, name="batchnorm3")
-            self.max_pool3 = maxpool2d(self.batchnorm3, k=2)
+            # self.batchnorm3 = batchnorm(self.conv3_4, name="batchnorm3")
+            self.max_pool3 = maxpool2d(self.conv3_4, k=2)
 
             # [batch, 25, 5, ngf * 8]  => [batch, 25, 5, ngf * 8]
             self.conv4_1 = conv2d(self.max_pool3, self.ngf*8, stride=1, name="conv4_1")
@@ -62,7 +62,21 @@ class DltccHeng(object):
             # [batch, 100, 20, ngf] => [batch, 200, 40, 1]
             self.deconv1 = deconv2d(self.de_rectified2, out_channels=1, name="deconv1")
             self.de_batchnorm1 = batchnorm(self.deconv1, name="de_batchnorm1")
-            self.out = tf.sigmoid(self.de_batchnorm1, name="out")
+            self.deconv_out = tf.sigmoid(self.de_batchnorm1, name="out")
+
+            # FC layers
+            self.layer_flat, self.num_flat_features = flatten_layer(self.deconv_out)
+            # FC layer 1
+            self.layer_fc1 = new_fc_layer(self.layer_flat, num_inputs=self.num_flat_features,
+                                          num_outputs=1000)
+
+            self.layer_fc2 = new_fc_layer(self.layer_fc1, num_inputs=1000, num_outputs=1000)
+            self.layer_fc3 = new_fc_layer(self.layer_fc2, num_inputs=1000, num_outputs=1000)
+
+            self.layer_fc4 = new_fc_layer(self.layer_fc3, num_inputs=1000,
+                                          num_outputs=self.image_width*self.image_height)
+            # out
+            self.out = tf.nn.sigmoid(self.layer_fc4)
 
 
 def conv2d(batch_input, out_channels, stride, name):
@@ -76,6 +90,7 @@ def conv2d(batch_input, out_channels, stride, name):
         #     => [batch, out_height, out_width, out_channels]
         conv = tf.nn.conv2d(batch_input, filter, strides=[1, stride, stride, 1], padding="SAME")
         conv = tf.nn.bias_add(conv, b)
+        conv = batchnorm(conv, "{}_batchnorm".format(name))
         return tf.nn.relu(conv)
 
 
@@ -120,4 +135,48 @@ def deconv2d(batch_input, out_channels, name):
                                           [1, 2, 2, 1], padding="SAME")
         return conv
 
+# flattening a layer
 
+def flatten_layer(layer):
+    # Get the shape of the input layer.
+    layer_shape = layer.get_shape()
+
+    # The number of features is: img_height * img_width * num_channels
+    # We can use a function from TensorFlow to calculate this.
+    num_features = layer_shape[1:4].num_elements()
+
+    # Reshape the layer to [num_images, num_features].
+
+    layer_flat = tf.reshape(layer, [-1, num_features])
+
+    return layer_flat, num_features
+
+
+# Fully connected layer
+def new_fc_layer(input,          # The previous layer.
+                 num_inputs,     # Num. inputs from prev. layer.
+                 num_outputs,    # Num. outputs.
+                 use_sigmoid=True):  # Use Rectified Linear Unit (ReLU)?
+
+    # Create new weights and biases.
+    weights = new_weights(shape=[num_inputs, num_outputs])
+    biases = new_biases(length=num_outputs)
+
+    # Calculate the layer as the matrix multiplication of
+    # the input and weights, and then add the bias-values.
+    layer = tf.matmul(input, weights) + biases
+
+    # Use ReLU?
+    if use_sigmoid:
+        layer = tf.nn.sigmoid(layer)
+
+    return layer
+
+
+# create new variables
+def new_weights(shape):
+    return tf.Variable(tf.truncated_normal(shape, stddev=0.05))
+
+
+def new_biases(length):
+    return tf.Variable(tf.constant(0.01, shape=[length]))
