@@ -36,7 +36,7 @@ model_dir = "../../checkpoints/models_200_40_mac_4_21"
 
 # max training epoch
 MAX_TRAIN_EPOCH = 1000
-DISPLAY_STEP = 1000
+DISPLAY_STEP = 100
 
 
 def train():

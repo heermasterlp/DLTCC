@@ -38,12 +38,12 @@ class DltccHeng(object):
 
         with tf.variable_scope("deconv_layers"):
             # [batch, 25, 5, ngf*4] => [batch, 50, 10, ngf*2]
-            self.deconv3 = deconv2d(self.max_pool3, self.ngf * 2, name="deconv3")
+            self.deconv3 = deconv2d(self.max_pool3, self.ngf * 8, name="deconv3")
             self.de_batchnorm3 = batchnorm(self.deconv3, name="de_batchnorm3")
             self.de_rectified3 = tf.nn.relu(self.de_batchnorm3, name="de_rectified3")
 
             # [batch, 50, 10, ngf*2] => [batch, 100, 20, ngf]
-            self.deconv2 = deconv2d(self.de_rectified3, self.ngf, name="deconv2")
+            self.deconv2 = deconv2d(self.de_rectified3, self.ngf*8, name="deconv2")
             self.de_batchnorm2 = batchnorm(self.deconv2, name="de_batchnorm2")
             self.de_rectified2 = tf.nn.relu(self.de_batchnorm2, name="de_rectified2")
 
