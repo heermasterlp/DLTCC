@@ -43,7 +43,7 @@ class DltccHeng(object):
             self.de_rectified3 = tf.nn.relu(self.de_batchnorm3, name="de_rectified3")
 
             # [batch, 50, 10, ngf*2] => [batch, 100, 20, ngf]
-            self.deconv2 = deconv2d(self.de_rectified3, self.ngf*16ß, name="deconv2")
+            self.deconv2 = deconv2d(self.de_rectified3, self.ngf*16, name="deconv2")
             self.de_batchnorm2 = batchnorm(self.deconv2, name="de_batchnorm2")
             self.de_rectified2 = tf.nn.relu(self.de_batchnorm2, name="de_rectified2")
 
