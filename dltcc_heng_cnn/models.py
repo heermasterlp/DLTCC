@@ -60,7 +60,7 @@ class DltccHeng(object):
             # [batch, 100, 20, ngf] => [batch, 200, 40, 1]
             self.deconv1 = deconv2d(self.de_rectified2, out_channels=1, name="deconv1")
             self.de_batchnorm1 = batchnorm(self.deconv1, name="de_batchnorm1")
-            self.deconv_out = tf.sigmoid(self.de_batchnorm1, name="out")
+            self.deconv_out = tf.nn.relu(self.de_batchnorm1, name="out")
 
             # FC layers
             self.layer_flat, self.num_flat_features = flatten_layer(self.deconv_out)
