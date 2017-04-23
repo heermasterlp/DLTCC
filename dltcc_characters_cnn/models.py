@@ -18,32 +18,32 @@ class DltccHeng(object):
 
         with tf.variable_scope("conv_layers"):
             # conv_1: [batch, 200, 4, 1] => [batch, 100, 20, ngf]
-            self.conv1_1 = conv2d(self.x_reshape, self.ngf*4, stride=1, name="conv1_1")
-            self.conv1_2 = conv2d(self.conv1_1, self.ngf*4, stride=1, name="conv1_2")
+            self.conv1_1 = conv2d(self.x_reshape, self.ngf*8, stride=1, name="conv1_1")
+            self.conv1_2 = conv2d(self.conv1_1, self.ngf*8, stride=1, name="conv1_2")
             self.max_pool1 = maxpool2d(self.conv1_2, k=2)
 
             # [batch, 100, 20, ngf*2] => [batch, 50, 10, ngf*4]
-            self.conv2_1 = conv2d(self.max_pool1, self.ngf * 4, stride=1, name="conv2_1")
-            self.conv2_2 = conv2d(self.conv2_1, self.ngf * 4, stride=1, name="conv2_2")
-            self.conv2_3 = conv2d(self.conv2_2, self.ngf * 4, stride=1, name="conv2_3")
-            self.conv2_4 = conv2d(self.conv2_3, self.ngf * 4, stride=1, name="conv2_4")
+            self.conv2_1 = conv2d(self.max_pool1, self.ngf * 16, stride=1, name="conv2_1")
+            self.conv2_2 = conv2d(self.conv2_1, self.ngf * 16, stride=1, name="conv2_2")
+            self.conv2_3 = conv2d(self.conv2_2, self.ngf * 16, stride=1, name="conv2_3")
+            self.conv2_4 = conv2d(self.conv2_3, self.ngf * 16, stride=1, name="conv2_4")
             self.max_pool2 = maxpool2d(self.conv2_4, k=2)
 
             # [batch, 50, 10, ngf*4] => [batch, 25, 5, ngf*8]
-            self.conv3_1 = conv2d(self.max_pool2, self.ngf * 8, stride=1, name="conv3_1")
-            self.conv3_2 = conv2d(self.conv3_1, self.ngf * 8, stride=1, name="conv3_2")
-            self.conv3_3 = conv2d(self.conv3_2, self.ngf * 8, stride=1, name="conv3_3")
-            self.conv3_4 = conv2d(self.conv3_3, self.ngf * 8, stride=1, name="conv3_4")
+            self.conv3_1 = conv2d(self.max_pool2, self.ngf * 16, stride=1, name="conv3_1")
+            self.conv3_2 = conv2d(self.conv3_1, self.ngf * 16, stride=1, name="conv3_2")
+            self.conv3_3 = conv2d(self.conv3_2, self.ngf * 16, stride=1, name="conv3_3")
+            self.conv3_4 = conv2d(self.conv3_3, self.ngf * 16, stride=1, name="conv3_4")
             self.max_pool3 = maxpool2d(self.conv3_4, k=2)
 
         with tf.variable_scope("deconv_layers"):
             # [batch, 25, 5, ngf*4] => [batch, 50, 10, ngf*2]
-            self.deconv3 = deconv2d(self.max_pool3, self.ngf * 8, name="deconv3")
+            self.deconv3 = deconv2d(self.max_pool3, self.ngf * 32, name="deconv3")
             self.de_batchnorm3 = batchnorm(self.deconv3, name="de_batchnorm3")
             self.de_rectified3 = tf.nn.relu(self.de_batchnorm3, name="de_rectified3")
 
             # [batch, 50, 10, ngf*2] => [batch, 100, 20, ngf]
-            self.deconv2 = deconv2d(self.de_rectified3, self.ngf*4, name="deconv2")
+            self.deconv2 = deconv2d(self.de_rectified3, self.ngf*16, name="deconv2")
             self.de_batchnorm2 = batchnorm(self.deconv2, name="de_batchnorm2")
             self.de_rectified2 = tf.nn.relu(self.de_batchnorm2, name="de_rectified2")
 
