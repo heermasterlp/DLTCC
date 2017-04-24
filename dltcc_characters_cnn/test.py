@@ -8,28 +8,30 @@ import tensorflow as tf
 import numpy as np
 from input_data import *
 from models import *
+from ImageDisplay import *
+from skimage.io import imsave
 
-# 200x40 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_heng_200_40_30_train.npy"
+# 256x256 data set
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/kai_256_256_150_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_256_256_150_train.npy"
 
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_heng_200_40_11_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_heng_200_40_11_test.npy"
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/kai_256_256_20_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_256_256_20_test.npy"
 
 # train data set files
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-IMAGE_WIDTH = 200
-IMAGE_HEIGHT = 40
+IMAGE_WIDTH = 256
+IMAGE_HEIGHT = 256
 
 ngf = 16
 batch_size = 28
 
-model_dir = "../../checkpoints/models_200_40_mac_4_21"
+model_dir = "../../checkpoints/models_256_256_mac_4_23"
 
 # Threshold
-threshold = 0.6
+threshold = 0.3
 
 def test():
     # Data set
@@ -63,7 +65,7 @@ def test():
             print("The checkpoint models not found!")
 
         # data set
-        x_batch, y_true = (data_set.train.data, data_set.train.target)
+        x_batch, y_true = data_set.train.next_batch(batch_size=batch_size)
 
         # predict
         y_pred = sess.run(predict_op, feed_dict={x: x_batch})
@@ -89,14 +91,39 @@ def test():
             print("y_true sum:{}".format(sum_y_true))
 
             for it in range(y_pred.shape[1]):
-                if y_pred[bt][it] >= threshold and y_true[bt][it] != 1.0:
+                if y_pred[bt][it] <= threshold and y_true[bt][it] != 1.0:
                         item_error += 1
-                elif y_pred[bt][it] < threshold and y_true[bt][it] == 1.0:
+                elif y_pred[bt][it] > threshold and y_true[bt][it] == 1.0:
                         item_error += 1
+            for it in range(y_pred.shape[1]):
+                if y_pred[bt][it] <= threshold:
+                    y_pred[bt][it] = 1.0
+                else:
+                    y_pred[bt][it] = 0.0
+
             item_error = item_error / sum_y_true
             avg_error += item_error
             print("item error:{}".format(item_error))
         print("avg error:{}".format(avg_error / y_pred.shape[0]))
+
+        show_result(y_pred, "train_result_threshold {}.jpg".format(threshold))
+
+
+def show_result(batch_res, fname, grid_size=(8, 8), grid_pad=5):
+    batch_res = 0.5 * batch_res.reshape((batch_res.shape[0], IMAGE_HEIGHT, IMAGE_WIDTH)) + 0.5
+    img_h, img_w = batch_res.shape[1], batch_res.shape[2]
+    grid_h = img_h * grid_size[0] + grid_pad * (grid_size[0] - 1)
+    grid_w = img_w * grid_size[1] + grid_pad * (grid_size[1] - 1)
+    img_grid = np.zeros((grid_h, grid_w), dtype=np.uint8)
+    for i, res in enumerate(batch_res):
+        if i >= grid_size[0] * grid_size[1]:
+            break
+        img = (res) * 255
+        img = img.astype(np.uint8)
+        row = (i // grid_size[0]) * (img_h + grid_pad)
+        col = (i % grid_size[1]) * (img_w + grid_pad)
+        img_grid[row:row + img_h, col:col + img_w] = img
+    imsave(fname, img_grid)
 
 
 if __name__ == "__main__":

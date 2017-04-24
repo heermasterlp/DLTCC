@@ -15,24 +15,24 @@ parser.add_argument('--mode', dest='mode', default='train', help='train or test'
 parser.add_argument('--device', dest='device', default='cpu:0', help='cpu or gpu')
 args = parser.parse_args()
 
-# 200x40 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_heng_200_40_30_train.npy"
+# 256x256 data set
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/kai_256_256_150_train.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_256_256_150_train.npy"
 
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_heng_200_40_11_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_heng_200_40_11_test.npy"
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/kai_256_256_20_test.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_256_256_20_test.npy"
 
 # train data set files---
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-IMAGE_WIDTH = 200
-IMAGE_HEIGHT = 40
+IMAGE_WIDTH = 256
+IMAGE_HEIGHT = 256
 
 ngf = 16
 batch_size = 28
 
-model_dir = "../../checkpoints/models_200_40_mac_4_21"
+model_dir = "../../checkpoints/models_256_256_mac_4_23"
 
 # max training epoch
 MAX_TRAIN_EPOCH = 1000
@@ -90,7 +90,8 @@ def train():
 
         # Train the models
         for epoch in range(args.epoch):
-            x_batch, y_batch = (data_set.train.data, data_set.train.target)
+            # x_batch, y_batch = (data_set.train.data, data_set.train.target)
+            x_batch, y_batch = data_set.train.next_batch(batch_size)
             _, loss = sess.run([optimizer_op, loss_op], feed_dict={x: x_batch, y_true: y_batch})
 
             if epoch % DISPLAY_STEP == 0:

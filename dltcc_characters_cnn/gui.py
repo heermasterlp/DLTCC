@@ -14,10 +14,10 @@ import os
 
 from models import *
 
-IMAGE_WIDTH = 200
-IMAGE_HEIGHT = 40
+IMAGE_WIDTH = 256
+IMAGE_HEIGHT = 256
 
-model_path = "../../checkpoints/models_200_40_mac_4_21"
+model_path = "../../checkpoints/models_256_256_mac_4_23"
 
 batch_size = 1
 ngf = 16
@@ -58,7 +58,7 @@ else:
     print("The checkpoint models not found!")
 
 root = tk.Tk()
-root.geometry('600x400')
+root.geometry('1200x800')
 root.title('DL2TCC')
 
 img_TK_Input = None
@@ -92,9 +92,9 @@ btn_Predict = tk.Button(root, text="Predict", command=lambda: predict(canvas_pre
 lbox = tk.Listbox(root, listvariable=var_filelist, height=10)
 
 theroshold_bar = tk.Scale(root, variable=var_threshold, from_=0, to=1, orient=tk.HORIZONTAL, resolution=0.0001,
-                          digits=3, command=lambda: predict(canvas_predict, canvas_compare))
+                          digits=3)
 
-label_Input.grid(row=0, column=2, sticky=tk.W+tk.E)
+label_Input.grid(row=0, column=2, sticky=tk.W+tk.E+tk.N)
 label_Predict.grid(row=0, column=3, sticky=tk.W+tk.E)
 label_Compare.grid(row=2, column=2, sticky=tk.W+tk.E)
 label_True.grid(row=2, column=3, sticky=tk.W+tk.E)
@@ -259,7 +259,7 @@ def predict(canvas, canvas_compare):
     img_pred = []
     for index in range(prediction_normed.shape[0]):
         print(prediction_normed[index])
-        if prediction_normed[index] >= THEROSHOLD:
+        if prediction_normed[index] <= THEROSHOLD:
             img_pred.append(1)
         else:
             img_pred.append(0)
@@ -277,7 +277,7 @@ def predict(canvas, canvas_compare):
 
     # calculate accuracy
     img_true_array = np.array(img_True.convert("1"))
-    img_true_array = np.reshape(img_true_array, 8000)
+    img_true_array = np.reshape(img_true_array, 256*256)
 
     sum = 0.0
     for i in range(predict_array.shape[0]):
@@ -286,9 +286,9 @@ def predict(canvas, canvas_compare):
     accuracy = 1 - sum / predict_array.shape[0]
 
     var_accuracy.set(accuracy)
-    img_true_array = np.reshape(img_true_array, (40, 200))
+    img_true_array = np.reshape(img_true_array, (IMAGE_HEIGHT, IMAGE_WIDTH))
 
-    rgbArray = np.zeros((40, 200, 3), 'uint8')
+    rgbArray = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH, 3), 'uint8')
     rgbArray[..., 0] = predict_reshape * 256
     rgbArray[..., 1] = img_true_array * 256
     compare_img = Image.fromarray(rgbArray, 'RGB')
