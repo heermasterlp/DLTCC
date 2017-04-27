@@ -18,7 +18,7 @@ class DltccHeng(object):
 
         with tf.variable_scope("conv_layers"):
             # conv_1: [batch, 256, 256, 1] => [batch, 256, 256, ngf]
-            self.conv1_1 = conv2d(self.x_reshape, self.ngf, stride=1, name="conv1_1")
+            self.conv1_1 = conv2d(self.x_reshape, self.ngf, stride=1, name="conv1_1", use_batchnorm=False)
             self.max_pool1 = maxpool2d(self.conv1_1, k=2)
 
             # [batch, 128, 128, ngf] => [batch, 64, 64, ngf]

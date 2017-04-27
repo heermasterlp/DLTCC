@@ -31,7 +31,7 @@ batch_size = 28
 model_dir = "../../checkpoints/models_256_256_mac_4_23"
 
 # Threshold
-threshold = 0.3
+# threshold = 0.1
 
 def test():
     # Data set
@@ -65,48 +65,50 @@ def test():
             print("The checkpoint models not found!")
 
         # data set
-        x_batch, y_true = data_set.train.next_batch(batch_size=batch_size)
+        x_batch, y_true = data_set.test.next_batch(batch_size=batch_size)
 
-        # predict
-        y_pred = sess.run(predict_op, feed_dict={x: x_batch})
+        threshold = 0.1
+        for i in range(9):
+            # predict
+            y_pred = sess.run(predict_op, feed_dict={x: x_batch})
 
-        assert y_pred.shape == y_true.shape
-        print("y_pred shape:{} y_true shape:{}".format(y_pred.shape, y_true.shape))
+            assert y_pred.shape == y_true.shape
+            print("y_pred shape:{} y_true shape:{}".format(y_pred.shape, y_true.shape))
 
-        y_pred_arr = np.array(y_pred)
-        y_true_arr = np.array(y_true)
-        print(y_true_arr.shape)
-        assert y_pred_arr.shape == y_true_arr.shape
+            y_pred_arr = np.array(y_pred)
+            y_true_arr = np.array(y_true)
+            print(y_true_arr.shape)
+            assert y_pred_arr.shape == y_true_arr.shape
+            # threshold
+            avg_error = 0.0
+            for bt in range(y_pred.shape[0]):
+                print("bt:{}".format(bt))
+                item_error = 0.0
+                sum_y_true = 0
 
-        # threshold
-        avg_error = 0.0
-        for bt in range(y_pred.shape[0]):
-            print("bt:{}".format(bt))
-            item_error = 0.0
-            sum_y_true = 0
+                for it in range(y_true.shape[1]):
+                    if y_true[bt][it] == 1.0:
+                        sum_y_true += 1
+                print("y_true sum:{}".format(sum_y_true))
 
-            for it in range(y_true.shape[1]):
-                if y_true[bt][it] == 1.0:
-                    sum_y_true += 1
-            print("y_true sum:{}".format(sum_y_true))
-
-            for it in range(y_pred.shape[1]):
-                if y_pred[bt][it] <= threshold and y_true[bt][it] != 1.0:
+                for it in range(y_pred.shape[1]):
+                    if y_pred[bt][it] <= threshold and y_true[bt][it] != 1.0:
                         item_error += 1
-                elif y_pred[bt][it] > threshold and y_true[bt][it] == 1.0:
+                    elif y_pred[bt][it] > threshold and y_true[bt][it] == 1.0:
                         item_error += 1
-            for it in range(y_pred.shape[1]):
-                if y_pred[bt][it] <= threshold:
-                    y_pred[bt][it] = 1.0
-                else:
-                    y_pred[bt][it] = 0.0
+                for it in range(y_pred.shape[1]):
+                    if y_pred[bt][it] <= threshold:
+                        y_pred[bt][it] = 1.0
+                    else:
+                        y_pred[bt][it] = 0.0
 
-            item_error = item_error / sum_y_true
-            avg_error += item_error
-            print("item error:{}".format(item_error))
-        print("avg error:{}".format(avg_error / y_pred.shape[0]))
+                item_error = item_error / sum_y_true
+                avg_error += item_error
+                print("item error:{}".format(item_error))
+            print("avg error:{}".format(avg_error / y_pred.shape[0]))
 
-        show_result(y_pred, "train_result_threshold {}.jpg".format(threshold))
+            show_result(y_pred, "test_result_threshold {}.jpg".format(threshold))
+            threshold += 0.1
 
 
 def show_result(batch_res, fname, grid_size=(8, 8), grid_pad=5):

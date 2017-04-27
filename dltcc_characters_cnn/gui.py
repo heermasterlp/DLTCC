@@ -99,10 +99,10 @@ label_Predict.grid(row=0, column=3, sticky=tk.W+tk.E)
 label_Compare.grid(row=2, column=2, sticky=tk.W+tk.E)
 label_True.grid(row=2, column=3, sticky=tk.W+tk.E)
 
-canvas_input.grid(row=1, column=2)
-canvas_predict.grid(row=1, column=3)
-canvas_compare.grid(row=3, column=2)
-canvas_true.grid(row=3, column=3)
+canvas_input.grid(row=1, column=2, sticky=tk.W+tk.N)
+canvas_predict.grid(row=1, column=3, sticky=tk.W+tk.N)
+canvas_compare.grid(row=3, column=2, sticky=tk.W+tk.N)
+canvas_true.grid(row=3, column=3, sticky=tk.W+tk.N)
 
 btn_Open.grid(row=1, column=0, sticky=tk.N+tk.W+tk.E)
 btn_Predict.grid(row=1, column=0, sticky=tk.W+tk.E)
@@ -111,12 +111,12 @@ E_Accuracy.grid(row=1, column=0, sticky=tk.S+tk.W+tk.E)
 
 lbox.grid(row=3, column=0, padx=5, pady=0, sticky=tk.W+tk.E)
 
-theroshold_bar.grid(row=4, column=0, sticky=tk.W+tk.E)
+theroshold_bar.grid(row=2, column=0, sticky=tk.W+tk.E)
 
-fig = Figure(figsize=(3, 3), dpi=26)
-fig.canvas = FigureCanvasTkAgg(fig, master=root)
-fig.canvas.show()
-fig.canvas.get_tk_widget().grid(row=3, column=2)
+# fig = Figure(figsize=(3, 3), dpi=10)
+# fig.canvas = FigureCanvasTkAgg(fig, master=root)
+# fig.canvas.show()
+# fig.canvas.get_tk_widget().grid(row=3, column=2)
 
 
 def open(canvas_input, canvas_true):
@@ -172,8 +172,8 @@ def open(canvas_input, canvas_true):
         img_True = image
         img_TK_True = ImageTk.PhotoImage(image)
 
-        canvas_input.create_image(w, h, image=img_TK_Input)
-        canvas_true.create_image(t_w, t_h, image=img_TK_True)
+        canvas_input.create_image(w, h, anchor=tk.S+tk.E, image=img_TK_Input)
+        canvas_true.create_image(t_w, t_h, anchor=tk.S+tk.E, image=img_TK_True)
     except Exception as e:
         return
 
@@ -214,8 +214,8 @@ def update(event):
         img_True = image
         img_TK_True = ImageTk.PhotoImage(image)
 
-        canvas_input.create_image(w, h, image=img_TK_Input)
-        canvas_true.create_image(t_w, t_h, image=img_TK_True)
+        canvas_input.create_image(w, h,  anchor=tk.S+tk.E, image=img_TK_Input)
+        canvas_true.create_image(t_w, t_h,  anchor=tk.S+tk.E, image=img_TK_True)
     except Exception as e:
         return
 
@@ -256,15 +256,14 @@ def predict(canvas, canvas_compare):
     # shape (8000,)
     prediction_normed = pred_arr
     print(prediction_normed.shape)
-    img_pred = []
-    for index in range(prediction_normed.shape[0]):
-        print(prediction_normed[index])
-        if prediction_normed[index] <= THEROSHOLD:
-            img_pred.append(1)
-        else:
-            img_pred.append(0)
 
-    predict_array = np.array(img_pred)
+    for index in range(prediction_normed.shape[0]):
+        if prediction_normed[index] <= THEROSHOLD:
+            prediction_normed[index] = 0
+        else:
+            prediction_normed[index] = 1
+
+    predict_array = np.array(prediction_normed)
     # print(predict_array)
 
     predict_reshape = predict_array.reshape((input_bitmap.shape[0], input_bitmap.shape[1]))
@@ -273,7 +272,7 @@ def predict(canvas, canvas_compare):
     img_TK_Predict = ImageTk.PhotoImage(predict_image)
     pred_w = input_bitmap.shape[0]
     pred_h = input_bitmap.shape[1]
-    canvas.create_image(pred_h, pred_w, image=img_TK_Predict)
+    canvas.create_image(pred_h, pred_w, anchor=tk.S+tk.E, image=img_TK_Predict)
 
     # calculate accuracy
     img_true_array = np.array(img_True.convert("1"))
@@ -293,7 +292,7 @@ def predict(canvas, canvas_compare):
     rgbArray[..., 1] = img_true_array * 256
     compare_img = Image.fromarray(rgbArray, 'RGB')
     compare_TK_img = ImageTk.PhotoImage(compare_img)
-    canvas_compare.create_image(pred_h, pred_w, image=compare_TK_img)
+    canvas_compare.create_image(pred_h, pred_w,  anchor=tk.S+tk.E, image=compare_TK_img)
 
 # def update_prediction(canvas, canvas_compare):
 

@@ -14,7 +14,7 @@ def fc(x, output_size, stddev=0.02, scope="fc"):
         return tf.matmul(x, W) + b
 
 
-def conv2d(batch_input, out_channels, stride, name):
+def conv2d(batch_input, out_channels, stride, name, use_batchnorm=True):
     with tf.variable_scope(name):
         in_channels = batch_input.get_shape()[3]
 
@@ -25,7 +25,8 @@ def conv2d(batch_input, out_channels, stride, name):
         #     => [batch, out_height, out_width, out_channels]
         conv = tf.nn.conv2d(batch_input, filter, strides=[1, stride, stride, 1], padding="SAME")
         conv = tf.nn.bias_add(conv, b)
-        conv = batchnorm(conv, "{}_batchnorm".format(name))
+        if use_batchnorm:
+            conv = batchnorm(conv, "{}_batchnorm".format(name))
         return tf.nn.relu(conv)
 
 
