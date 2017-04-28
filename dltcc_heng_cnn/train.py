@@ -33,6 +33,8 @@ output_width = 256
 generator_dim = 64
 batch_size = 20
 
+Ltv_penalty = 100
+
 model_dir = "../../checkpoints/models_256_256_heng_mac_4_28"
 
 # max training epoch
@@ -74,8 +76,13 @@ def train():
     y_pred = tf.reshape(out, shape=y_true.shape)
 
     with tf.device(args.device):
-        loss_op = tf.reduce_mean((y_true - y_pred)**2)
-        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(loss_op)
+        l1_loss_op = tf.reduce_mean((y_true - y_pred)**2)
+
+        # tv loss
+        width = output_width
+        tv_loss_op = (tf.nn.l2_loss(y_pred[:, 1:, :, :] - y_pred[:, :width - 1, :, :]) / width
+                   + tf.nn.l2_loss(y_pred[:, :, 1:, :] - y_pred[:, :, :width - 1, :]) / width) * Ltv_penalty
+        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(l1_loss_op)
 
     print("Build models end!")
 
@@ -96,9 +103,9 @@ def train():
         # Train the models
         for epoch in range(args.epoch):
             x_batch, y_batch = data_set.train.next_batch(batch_size)
-            _, loss = sess.run([optimizer_op, loss_op], feed_dict={x: x_batch, y_true: y_batch})
+            _, loss = sess.run([optimizer_op, l1_loss_op], feed_dict={x: x_batch, y_true: y_batch})
 
-            if epoch % 2 == 0:
+            if epoch % 100 == 0:
                 print("Epoch {} : {}".format(epoch, loss))
 
         duration = time.time() - start_time
