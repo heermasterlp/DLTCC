@@ -80,11 +80,11 @@ def train():
         # tv loss
         width = output_width
         y_pred_reshape = tf.reshape(y_pred, [batch_size, input_width, input_width, 1])
-        tv_loss_op = (tf.nn.l2_loss(y_pred_reshape[:, 1:, :, :] - y_pred_reshape[:, :width - 1, :, :]) / width
-                   + tf.nn.l2_loss(y_pred_reshape[:, :, 1:, :] - y_pred_reshape[:, :, :width - 1, :]) / width) * Ltv_penalty
+        # tv_loss_op = (tf.nn.l2_loss(y_pred_reshape[:, 1:, :, :] - y_pred_reshape[:, :width - 1, :, :]) / width
+        #            + tf.nn.l2_loss(y_pred_reshape[:, :, 1:, :] - y_pred_reshape[:, :, :width - 1, :]) / width) * Ltv_penalty
 
-        total_loss = l1_loss_op + tv_loss_op
-        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(total_loss)
+        # total_loss = l1_loss_op + tv_loss_op
+        optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(l1_loss_op)
 
     print("Build models end!")
 
@@ -105,10 +105,10 @@ def train():
         # Train the models
         for epoch in range(args.epoch):
             x_batch, y_batch = data_set.train.next_batch(batch_size)
-            _, li_loss, tv_loss = sess.run([optimizer_op, l1_loss_op, tv_loss_op], feed_dict={x: x_batch, y_true: y_batch})
+            _, li_loss = sess.run([optimizer_op, l1_loss_op], feed_dict={x: x_batch, y_true: y_batch})
 
             if epoch % 100 == 0:
-                print("Epoch total loss:{} l1_loss: {} tv_loss:{}".format(epoch, li_loss, tv_loss))
+                print("Epoch total loss:{} l1_loss: {}".format(epoch, li_loss))
 
         duration = time.time() - start_time
 
