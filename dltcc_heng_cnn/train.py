@@ -72,7 +72,6 @@ def train():
     print("Build models end!")
 
     # prediction and reshape
-    print(out.shape)
     y_pred = tf.reshape(out, shape=y_true.shape)
 
     with tf.device(args.device):
@@ -109,7 +108,7 @@ def train():
             _, li_loss, tv_loss = sess.run([optimizer_op, l1_loss_op, tv_loss_op], feed_dict={x: x_batch, y_true: y_batch})
 
             if epoch % 100 == 0:
-                print("Epoch total loss:{} l1_loss: {} tv_loss:{}".format(epoch, l1_loss_op, tv_loss))
+                print("Epoch total loss:{} l1_loss: {} tv_loss:{}".format(epoch, li_loss, tv_loss))
 
         duration = time.time() - start_time
 
