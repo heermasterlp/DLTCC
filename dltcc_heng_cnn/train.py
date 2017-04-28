@@ -17,7 +17,7 @@ parser.add_argument('--device', dest='device', default='cpu:0', help='cpu or gpu
 args = parser.parse_args()
 
 # 200x40 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/kai_256_256_30_train_heng.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_256_256_30_train_heng.npy"
 train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_256_256_30_train_heng.npy"
 
 test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_256_256_6_test_heng.npy"
