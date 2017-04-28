@@ -6,7 +6,8 @@ import os
 import argparse
 import tensorflow as tf
 from input_data import *
-from models import *
+from model256x256 import *
+from ops import *
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--epoch', dest='epoch', type=int, default=200, help='# of epoch')
@@ -16,23 +17,23 @@ parser.add_argument('--device', dest='device', default='cpu:0', help='cpu or gpu
 args = parser.parse_args()
 
 # 200x40 data set
-train_data_dir = "../../DataSet/DataSetFiles/TrainSet/Kai_heng_200_40_30_train.npy"
-train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_heng_200_40_30_train.npy"
+train_data_dir = "../../DataSet/DataSetFiles/TrainSet/kai_256_256_30_train_heng.npy"
+train_target_dir = "../../DataSet/DataSetFiles/TrainSet/Qigong_256_256_30_train_heng.npy"
 
-test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_heng_200_40_11_test.npy"
-test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_heng_200_40_11_test.npy"
+test_data_dir = "../../DataSet/DataSetFiles/TestSet/Kai_256_256_6_test_heng.npy"
+test_target_dir = "../../DataSet/DataSetFiles/TestSet/Qigong_256_256_6_test_heng.npy"
 
 # train data set files---
 train_dir = {"train": {"data": train_data_dir, "target": train_target_dir},
              "test": {"data": test_data_dir, "target": test_target_dir}}
 
-IMAGE_WIDTH = 200
-IMAGE_HEIGHT = 40
+input_width = 256
+output_width = 256
 
-ngf = 16
-batch_size = 28
+generator_dim = 64
+batch_size = 20
 
-model_dir = "../../checkpoints/models_200_40_mac_4_21"
+model_dir = "../../checkpoints/models_256_256_heng_mac_4_28"
 
 # max training epoch
 MAX_TRAIN_EPOCH = 1000
@@ -54,19 +55,23 @@ def train():
 
     print("Start build models")
     # place variable
-    x = tf.placeholder(tf.float32, shape=[batch_size, IMAGE_WIDTH * IMAGE_HEIGHT], name="x")
-    y_true = tf.placeholder(tf.float32, shape=[batch_size, IMAGE_WIDTH * IMAGE_HEIGHT], name="y_true")
+    x = tf.placeholder(tf.float32, shape=[batch_size, input_width * input_width], name="x")
+    y_true = tf.placeholder(tf.float32, shape=[batch_size, output_width * output_width], name="y_true")
 
     # Models
     is_training = False
     if args.mode == "train":
         is_training = True
-    models = DltccHeng(ngf, IMAGE_WIDTH, IMAGE_HEIGHT)
-    models.build(x)
+    models = DltccHeng(batch_size=batch_size, generator_dim=64, input_width=256, output_width=256, input_filters=3,
+                       output_filters=3, is_training=is_training)
+    models.build_model(x)
+
+    out = models.output
     print("Build models end!")
 
     # prediction and reshape
-    y_pred = tf.reshape(models.out, shape=y_true.shape)
+    print(out.shape)
+    y_pred = tf.reshape(out, shape=y_true.shape)
 
     with tf.device(args.device):
         loss_op = tf.reduce_mean((y_true - y_pred)**2)
@@ -90,10 +95,10 @@ def train():
 
         # Train the models
         for epoch in range(args.epoch):
-            x_batch, y_batch = (data_set.train.data, data_set.train.target)
+            x_batch, y_batch = data_set.train.next_batch(batch_size)
             _, loss = sess.run([optimizer_op, loss_op], feed_dict={x: x_batch, y_true: y_batch})
 
-            if epoch % DISPLAY_STEP == 0:
+            if epoch % 2 == 0:
                 print("Epoch {} : {}".format(epoch, loss))
 
         duration = time.time() - start_time

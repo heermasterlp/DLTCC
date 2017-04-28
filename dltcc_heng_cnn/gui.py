@@ -58,7 +58,7 @@ else:
     print("The checkpoint models not found!")
 
 root = tk.Tk()
-root.geometry('600x400')
+root.geometry('1200x800')
 root.title('DL2TCC')
 
 img_TK_Input = None
@@ -280,10 +280,13 @@ def predict(canvas, canvas_compare):
     img_true_array = np.reshape(img_true_array, 8000)
 
     sum = 0.0
+    sum_ = 0.0
     for i in range(predict_array.shape[0]):
-        if predict_array[i] == 1.0 and img_true_array[i] != 1.0:
+        if predict_array[i] == 1.0 and img_true_array[i] != 1.0 or predict_array[i] != 1.0 and img_true_array[i] == 1.0:
             sum += 1
-    accuracy = 1 - sum / predict_array.shape[0]
+        if img_true_array[i] == 1.0:
+            sum_ += 1
+    accuracy = 1 - sum / sum_
 
     var_accuracy.set(accuracy)
     img_true_array = np.reshape(img_true_array, (40, 200))
