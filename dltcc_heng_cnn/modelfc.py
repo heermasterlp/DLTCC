@@ -32,7 +32,7 @@ class DltccHeng(object):
 
 # Hidden layers
 def hidden_layer(images, input_dim, output_dim):
-    weights = tf.Variable(tf.truncated_normal([input_dim, output_dim], stddev=1.0 / math.sqrt(tf.float32(images))),
+    weights = tf.Variable(tf.truncated_normal([input_dim, output_dim], stddev=1.0),
                               name='weights')
     biases = tf.Variable(tf.zeros([output_dim]), name='biases')
 
