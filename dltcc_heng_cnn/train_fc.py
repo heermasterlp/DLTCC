@@ -6,7 +6,7 @@ import os
 import argparse
 import tensorflow as tf
 from input_data import *
-from modelautoencoder import *
+from modelfc import *
 from ops import *
 
 parser = argparse.ArgumentParser(description='')
@@ -64,8 +64,7 @@ def train():
     is_training = False
     if args.mode == "train":
         is_training = True
-    models = DltccHeng(batch_size=batch_size, generator_dim=64, input_width=256, output_width=256, input_filters=3,
-                       output_filters=3, is_training=is_training)
+    models = DltccHeng(width=input_width, height=input_width)
     models.build_model(x)
 
     out = models.output
@@ -80,8 +79,9 @@ def train():
         # tv loss
         width = output_width
         y_pred_reshape = tf.reshape(y_pred, [batch_size, input_width, input_width, 1])
-        tv_loss_op = (tf.nn.l2_loss(y_pred_reshape[:, 1:, :, :] - y_pred_reshape[:, :width - 1, :, :]) / width
-                   + tf.nn.l2_loss(y_pred_reshape[:, :, 1:, :] - y_pred_reshape[:, :, :width - 1, :]) / width) * Ltv_penalty
+        tv_loss_op = (tf.nn.l2_loss(y_pred_reshape[:, 1:, :, :] - y_pred_reshape[:, :width - 1, :, :]) / width \
+                   + tf.nn.l2_loss(y_pred_reshape[:, :, 1:, :] - y_pred_reshape[:, :, :width - 1, :]) / width) * \
+                     Ltv_penalty
 
         total_loss = l1_loss_op + tv_loss_op
         optimizer_op = tf.train.RMSPropOptimizer(0.01).minimize(total_loss)
