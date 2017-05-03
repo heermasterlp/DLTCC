@@ -107,7 +107,7 @@ def test():
                 print("item error:{}".format(item_error))
             print("avg error:{}".format(avg_error / y_pred.shape[0]))
 
-            show_result(y_pred, "test_result_threshold {}.jpg".format(threshold))
+            show_result(y_pred, "test1_result_threshold {}.jpg".format(threshold))
             threshold += 0.1
 
 
