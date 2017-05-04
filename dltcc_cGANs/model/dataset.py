@@ -2,12 +2,12 @@
 from __future__ import print_function
 from __future__ import absolute_import
 # import cPickle as pickle
-import _pickle as pickle
+# import _pickle as pickle
+import pickle
 import numpy as np
 import random
 import os
-from .utils import pad_seq, bytes_to_file, \
-    read_split_image, shift_and_resize_image, normalize_image
+from .utils import pad_seq, bytes_to_file, read_split_image, shift_and_resize_image, normalize_image
 
 
 class PickledImageProvider(object):
