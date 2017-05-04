@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import absolute_import
 # import cPickle as pickle
-import _pickle as cPickle
+import _pickle as pickle
 import numpy as np
 import random
 import os
