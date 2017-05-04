@@ -484,6 +484,7 @@ class UNet(object):
         counter = 0
         start_time = time.time()
         for ei in range(epoch):
+            print("Epoch: {}".format(ei))
             train_batch_iter = data_provider.get_train_iter(self.batch_size)
 
             if (ei + 1) % schedule == 0:
