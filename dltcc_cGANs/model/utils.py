@@ -9,7 +9,7 @@ import imageio
 import scipy.misc as misc
 import numpy as np
 # from cStringIO import StringIO
-from io import BytesIO
+from io import StringIO
 
 
 def pad_seq(seq, batch_size):
@@ -23,7 +23,7 @@ def pad_seq(seq, batch_size):
 
 
 def bytes_to_file(bytes_img):
-    return BytesIO(bytes_img)
+    return StringIO(bytes_img)
 
 
 def normalize_image(img):

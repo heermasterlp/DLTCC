@@ -47,7 +47,7 @@ def get_batch_iter(examples, batch_size, augment):
                 # 2) random crop the image back to its original size
                 # NOTE: image A and B needs to be in sync as how much
                 # to be shifted
-                w, h = img_A.shape
+                w, h, _ = img_A.shape
                 multiplier = random.uniform(1.00, 1.20)
                 # add an eps to prevent cropping issue
                 nw = int(multiplier * w) + 1
