@@ -24,7 +24,7 @@ def pad_seq(seq, batch_size):
 
 
 def bytes_to_file(bytes_img):
-    print(type(bytes_img))
+    # print(type(bytes_img))
     return BytesIO(bytes_img)
 
 
