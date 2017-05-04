@@ -5,8 +5,8 @@ from __future__ import absolute_import
 import argparse
 import glob
 import os
-import cPickle as pickle
-# import _pickle as cPickle
+# import cPickle as pickle
+import _pickle as cPickle
 import random
 
 
@@ -25,9 +25,9 @@ def pickle_examples(paths, train_path, val_path, train_val_split=0.1):
                     r = random.random()
                     example = (label, img_bytes)
                     if r < train_val_split:
-                        pickle.dump(example, fv)
+                        cPickle.dump(example, fv)
                     else:
-                        pickle.dump(example, ft)
+                        cPickle.dump(example, ft)
 
 
 parser = argparse.ArgumentParser(description='Compile list of images into a pickled object for training')
