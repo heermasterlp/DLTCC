@@ -6,9 +6,9 @@ import os
     Generate the ImageDisplay SourceImages of Kai script and Qigong script and save to gray scale images.
 '''
 
-ORIANGL_HEIGHT = 32
-ORIANGL_WIDTH = 32
-CHARACTER_SIZE = 32
+ORIANGL_HEIGHT = 256
+ORIANGL_WIDTH = 256
+CHARACTER_SIZE = 256
 
 # Characters dictionary of Chinese.
 CHARACTER_DICT_FILE = "../character_dict/chinese_characters.txt"
@@ -28,7 +28,7 @@ Kai_128_128_20_test = "../../DataSet/SourceImages/Kai_128_128_20_test/"
 Qigong_128_128_200_train = "../../DataSet/SourceImages/Qigong_256_256_200_train/"
 Qigong_128_128_20_test = "../../DataSet/SourceImages/Qigong_256_256_20_test/"
 
-data_dir = "../../DataSet/SourceImages/data_32_32/"
+data_dir = "../../DataSet/SourceImages/data_{}_{}/".format(ORIANGL_WIDTH, ORIANGL_HEIGHT)
 
 
 class DataSetGenerate:

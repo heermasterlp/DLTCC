@@ -32,7 +32,7 @@ IMAGE_HEIGHT = 256
 ngf = 16
 batch_size = 28
 
-model_dir = "../../checkpoints/models_256_256_mac_4_23"
+model_dir = "../../checkpoints/models_256_256_mac_5_3"
 
 # max training epoch
 MAX_TRAIN_EPOCH = 1000
